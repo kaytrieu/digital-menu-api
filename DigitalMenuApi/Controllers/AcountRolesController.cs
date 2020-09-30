@@ -12,48 +12,48 @@ namespace DigitalMenuApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AcountRolesController : ControllerBase
+    public class AccountRolesController : ControllerBase
     {
         private readonly DigitalMenuBoxContext _context;
 
-        public AcountRolesController(DigitalMenuBoxContext context)
+        public AccountRolesController(DigitalMenuBoxContext context)
         {
             _context = context;
         }
 
-        // GET: api/AcountRoles
+        // GET: api/AccountRoles
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AcountRole>>> GetAcountRole()
+        public async Task<ActionResult<IEnumerable<AccountRole>>> GetAccountRole()
         {
-            return await _context.AcountRole.ToListAsync();
+            return await _context.AccountRole.ToListAsync();
         }
 
-        // GET: api/AcountRoles/5
+        // GET: api/AccountRoles/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<AcountRole>> GetAcountRole(int id)
+        public async Task<ActionResult<AccountRole>> GetAccountRole(int id)
         {
-            var acountRole = await _context.AcountRole.FindAsync(id);
+            var AccountRole = await _context.AccountRole.FindAsync(id);
 
-            if (acountRole == null)
+            if (AccountRole == null)
             {
                 return NotFound();
             }
 
-            return acountRole;
+            return AccountRole;
         }
 
-        // PUT: api/AcountRoles/5
+        // PUT: api/AccountRoles/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAcountRole(int id, AcountRole acountRole)
+        public async Task<IActionResult> PutAccountRole(int id, AccountRole AccountRole)
         {
-            if (id != acountRole.Id)
+            if (id != AccountRole.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(acountRole).State = EntityState.Modified;
+            _context.Entry(AccountRole).State = EntityState.Modified;
 
             try
             {
@@ -61,7 +61,7 @@ namespace DigitalMenuApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!AcountRoleExists(id))
+                if (!AccountRoleExists(id))
                 {
                     return NotFound();
                 }
@@ -74,20 +74,20 @@ namespace DigitalMenuApi.Controllers
             return NoContent();
         }
 
-        // POST: api/AcountRoles
+        // POST: api/AccountRoles
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<AcountRole>> PostAcountRole(AcountRole acountRole)
+        public async Task<ActionResult<AccountRole>> PostAccountRole(AccountRole AccountRole)
         {
-            _context.AcountRole.Add(acountRole);
+            _context.AccountRole.Add(AccountRole);
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (AcountRoleExists(acountRole.Id))
+                if (AccountRoleExists(AccountRole.Id))
                 {
                     return Conflict();
                 }
@@ -97,28 +97,28 @@ namespace DigitalMenuApi.Controllers
                 }
             }
 
-            return CreatedAtAction("GetAcountRole", new { id = acountRole.Id }, acountRole);
+            return CreatedAtAction("GetAccountRole", new { id = AccountRole.Id }, AccountRole);
         }
 
-        // DELETE: api/AcountRoles/5
+        // DELETE: api/AccountRoles/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<AcountRole>> DeleteAcountRole(int id)
+        public async Task<ActionResult<AccountRole>> DeleteAccountRole(int id)
         {
-            var acountRole = await _context.AcountRole.FindAsync(id);
-            if (acountRole == null)
+            var AccountRole = await _context.AccountRole.FindAsync(id);
+            if (AccountRole == null)
             {
                 return NotFound();
             }
 
-            _context.AcountRole.Remove(acountRole);
+            _context.AccountRole.Remove(AccountRole);
             await _context.SaveChangesAsync();
 
-            return acountRole;
+            return AccountRole;
         }
 
-        private bool AcountRoleExists(int id)
+        private bool AccountRoleExists(int id)
         {
-            return _context.AcountRole.Any(e => e.Id == id);
+            return _context.AccountRole.Any(e => e.Id == id);
         }
     }
 }

@@ -48,7 +48,7 @@ namespace DigitalMenuApi.Migrations
                     b.ToTable("Account");
                 });
 
-            modelBuilder.Entity("DigitalMenuApi.Models.AcountRole", b =>
+            modelBuilder.Entity("DigitalMenuApi.Models.AccountRole", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -63,7 +63,7 @@ namespace DigitalMenuApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AcountRole");
+                    b.ToTable("AccountRole");
                 });
 
             modelBuilder.Entity("DigitalMenuApi.Models.Box", b =>
@@ -313,10 +313,10 @@ namespace DigitalMenuApi.Migrations
 
             modelBuilder.Entity("DigitalMenuApi.Models.Account", b =>
                 {
-                    b.HasOne("DigitalMenuApi.Models.AcountRole", "Role")
+                    b.HasOne("DigitalMenuApi.Models.AccountRole", "Role")
                         .WithMany("Account")
                         .HasForeignKey("RoleId")
-                        .HasConstraintName("FK_Account_AcountRole")
+                        .HasConstraintName("FK_Account_AccountRole")
                         .IsRequired();
 
                     b.HasOne("DigitalMenuApi.Models.Store", "Store")

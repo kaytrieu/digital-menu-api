@@ -4,14 +4,16 @@ using DigitalMenuApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DigitalMenuApi.Migrations
 {
     [DbContext(typeof(DigitalMenuBoxContext))]
-    partial class DigitalMenuBoxContextModelSnapshot : ModelSnapshot
+    [Migration("20200930143335_Refactor DB")]
+    partial class RefactorDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

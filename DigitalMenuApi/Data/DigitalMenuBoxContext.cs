@@ -10,15 +10,18 @@ namespace DigitalMenuApi.Data
     {
         public DigitalMenuBoxContext()
         {
+            this.ChangeTracker.LazyLoadingEnabled = false;
+
         }
 
         public DigitalMenuBoxContext(DbContextOptions<DigitalMenuBoxContext> options)
             : base(options)
         {
+            this.ChangeTracker.LazyLoadingEnabled = false;
         }
 
         public virtual DbSet<Account> Account { get; set; }
-        public virtual DbSet<AcountRole> AcountRole { get; set; }
+        public virtual DbSet<AccountRole> AccountRole { get; set; }
         public virtual DbSet<Box> Box { get; set; }
         public virtual DbSet<BoxType> BoxType { get; set; }
         public virtual DbSet<Product> Product { get; set; }
@@ -26,7 +29,6 @@ namespace DigitalMenuApi.Data
         public virtual DbSet<ProductListProduct> ProductListProduct { get; set; }
         public virtual DbSet<Screen> Screen { get; set; }
         public virtual DbSet<ScreenTemplate> ScreenTemplate { get; set; }
-        public virtual DbSet<Session> Session { get; set; }
         public virtual DbSet<Store> Store { get; set; }
         public virtual DbSet<Template> Template { get; set; }
 

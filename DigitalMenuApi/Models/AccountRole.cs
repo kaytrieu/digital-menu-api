@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace DigitalMenuApi.Models
 {
-    public partial class AcountRole
+    public partial class AccountRole
     {
-        public AcountRole()
+        public AccountRole()
         {
             Account = new HashSet<Account>();
         }

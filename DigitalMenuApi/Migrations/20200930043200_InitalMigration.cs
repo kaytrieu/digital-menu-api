@@ -8,7 +8,7 @@ namespace DigitalMenuApi.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AcountRole",
+                name: "AccountRole",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -18,7 +18,7 @@ namespace DigitalMenuApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AcountRole", x => x.Id);
+                    table.PrimaryKey("PK_AccountRole", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -93,9 +93,9 @@ namespace DigitalMenuApi.Migrations
                 {
                     table.PrimaryKey("PK_Account", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Account_AcountRole",
+                        name: "FK_Account_AccountRole",
                         column: x => x.RoleId,
-                        principalTable: "AcountRole",
+                        principalTable: "AccountRole",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -344,7 +344,7 @@ namespace DigitalMenuApi.Migrations
                 name: "ScreenTemplate");
 
             migrationBuilder.DropTable(
-                name: "AcountRole");
+                name: "AccountRole");
 
             migrationBuilder.DropTable(
                 name: "Product");
