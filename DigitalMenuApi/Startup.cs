@@ -24,7 +24,7 @@ namespace DigitalMenuApi
 
             int apiVersion = Configuration.GetValue<int>("Version");
             //services.AddTransient<DbContext, DigitalMenuBoxContext>();
-            services.AddDbContext<DigitalMenuBoxContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("Digital_Menu_Box")));
+            services.AddDbContext<DigitalMenuBoxContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("AzureDigitalMenuAPI")));
             
             //(Configuration.GetConnectionString("Digital_Menu_Box")));
 
