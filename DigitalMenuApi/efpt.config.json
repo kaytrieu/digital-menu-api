@@ -1,0 +1,73 @@
+﻿{
+   "ContextClassName": "Digital_Menu_BoxContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": "Data",
+   "OutputPath": "Models",
+   "ProjectRootNamespace": "DigitalMenuApi",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Account]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[AcountRole]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Box]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[BoxType]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Product]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[ProductList]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[ProductListProduct]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Screen]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[ScreenTemplate]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Session]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Store]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Template]"
+      }
+   ],
+   "UseDatabaseNames": false,
+   "UseDbContextSplitting": true,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseNodaTime": false,
+   "UseSpatial": false,
+   "UseStoredProcedures": false
+}
