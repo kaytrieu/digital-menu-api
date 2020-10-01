@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DigitalMenuApi.Data;
+﻿using AutoMapper;
+using DigitalMenuApi.Dtos.AccountDtos;
 using DigitalMenuApi.Models;
+using DigitalMenuApi.Repository;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace DigitalMenuApi.Controllers
 {
@@ -14,62 +11,56 @@ namespace DigitalMenuApi.Controllers
     [ApiController]
     public class AccountsController : ControllerBase
     {
-        private readonly DigitalMenuBoxContext _context;
+        private readonly IAccountRepository _repository;
+        private readonly IMapper _mapper;
 
-        public AccountsController(DigitalMenuBoxContext context)
+        public AccountsController(IAccountRepository repository, IMapper mapper)
         {
-            _context = context;
+            _repository = repository;
+            _mapper = mapper;
         }
 
         // GET: api/Accounts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Account>>> GetAccount()
+        public ActionResult GetAccount()
         {
-            return await _context.Account.ToListAsync();
+            IEnumerable<Account> accounts = _repository.GetAll(x => x.Role, x => x.Store);
+            return Ok(_mapper.Map<IEnumerable<AccountReadDto>>(accounts));
+            //return Ok(accounts);
         }
+
 
         // GET: api/Accounts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Account>> GetAccount(int id)
+        public ActionResult GetAccount(int id)
         {
-            var account = await _context.Account.FindAsync(id);
+            Account account = _repository.Get(x => x.Id == id, x => x.Role, x => x.Store);
 
             if (account == null)
             {
                 return NotFound();
             }
 
-            return account;
+            return Ok(_mapper.Map<AccountReadDto>(account));
         }
 
         // PUT: api/Accounts/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAccount(int id, Account account)
+        public IActionResult PutAccount(int id, AccountUpdateDto accountUpdateDto)
         {
-            if (id != account.Id)
+            Account accountFromRepo = _repository.Get(x => x.Id == id, x => x.Role, x => x.Store);
+
+            if (accountFromRepo == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(account).State = EntityState.Modified;
+            //Mapper to Update
+            _mapper.Map(accountUpdateDto, accountFromRepo);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AccountExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _repository.Update(id, accountFromRepo);
+            _repository.SaveChanges();
+
 
             return NoContent();
         }
@@ -78,47 +69,37 @@ namespace DigitalMenuApi.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Account>> PostAccount(Account account)
+        public ActionResult PostAccount(AccountCreateDto accountCreateDto)
         {
-            _context.Account.Add(account);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (AccountExists(account.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            Account accountModel = _mapper.Map<Account>(accountCreateDto);
 
-            return CreatedAtAction("GetAccount", new { id = account.Id }, account);
+            _repository.Add(accountModel);
+            _repository.SaveChanges();
+
+            AccountReadDto accountReadDto = _mapper.Map<AccountReadDto>(accountModel);
+
+            return CreatedAtAction("GetAccount", new { id = accountReadDto.Id }, accountCreateDto);
+
         }
 
         // DELETE: api/Accounts/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Account>> DeleteAccount(int id)
+        public ActionResult DeleteAccount(int id)
         {
-            var account = await _context.Account.FindAsync(id);
-            if (account == null)
+            Account accountFromRepo = _repository.Get(x => x.Id == id);
+
+            if (accountFromRepo == null)
             {
                 return NotFound();
             }
 
-            _context.Account.Remove(account);
-            await _context.SaveChangesAsync();
+            _repository.Delete(accountFromRepo);
 
-            return account;
+            _repository.SaveChanges();
+
+            return NoContent();
         }
 
-        private bool AccountExists(int id)
-        {
-            return _context.Account.Any(e => e.Id == id);
-        }
+
     }
 }

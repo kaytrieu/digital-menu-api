@@ -24,7 +24,6 @@ namespace DigitalMenuApi.Data
             entity.HasOne(d => d.Store)
                 .WithMany(p => p.Account)
                 .HasForeignKey(d => d.StoreId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Account_Store");
         }
     }

@@ -16,16 +16,6 @@ namespace DigitalMenuApi.Data
                 .HasForeignKey(d => d.BoxTypeId)
                 .HasConstraintName("FK_Box_ContainerType");
 
-            entity.HasOne(d => d.Footer)
-                .WithMany(p => p.BoxFooter)
-                .HasForeignKey(d => d.FooterId)
-                .HasConstraintName("FK_Box_Session1");
-
-            entity.HasOne(d => d.Header)
-                .WithMany(p => p.BoxHeader)
-                .HasForeignKey(d => d.HeaderId)
-                .HasConstraintName("FK_Box_Session");
-
             entity.HasOne(d => d.Template)
                 .WithMany(p => p.Box)
                 .HasForeignKey(d => d.TemplateId)

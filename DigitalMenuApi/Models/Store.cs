@@ -9,6 +9,7 @@ namespace DigitalMenuApi.Models
         public Store()
         {
             Account = new HashSet<Account>();
+            Product = new HashSet<Product>();
             Screen = new HashSet<Screen>();
             Template = new HashSet<Template>();
         }
@@ -17,6 +18,7 @@ namespace DigitalMenuApi.Models
         public string Name { get; set; }
 
         public virtual ICollection<Account> Account { get; set; }
+        public virtual ICollection<Product> Product { get; set; }
         public virtual ICollection<Screen> Screen { get; set; }
         public virtual ICollection<Template> Template { get; set; }
     }

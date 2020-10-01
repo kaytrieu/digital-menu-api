@@ -3,12 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DigitalMenuApi.Migrations
 {
-    public partial class InitalMigration : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AcountRole",
+                name: "AccountRole",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -18,7 +18,7 @@ namespace DigitalMenuApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AcountRole", x => x.Id);
+                    table.PrimaryKey("PK_AccountRole", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -33,37 +33,6 @@ namespace DigitalMenuApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BoxType", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Product",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true),
-                    Price = table.Column<string>(nullable: true),
-                    Src = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Product", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Session",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(nullable: true),
-                    Src = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Session", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -86,7 +55,7 @@ namespace DigitalMenuApi.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Token = table.Column<string>(unicode: false, nullable: false),
-                    StoreId = table.Column<int>(nullable: false),
+                    StoreId = table.Column<int>(nullable: true),
                     RoleId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -95,11 +64,34 @@ namespace DigitalMenuApi.Migrations
                     table.ForeignKey(
                         name: "FK_Account_AcountRole",
                         column: x => x.RoleId,
-                        principalTable: "AcountRole",
+                        principalTable: "AccountRole",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Account_Store",
+                        column: x => x.StoreId,
+                        principalTable: "Store",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Product",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
+                    Price = table.Column<string>(nullable: true),
+                    Src = table.Column<string>(nullable: true),
+                    StoreId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Product", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Product_Store",
                         column: x => x.StoreId,
                         principalTable: "Store",
                         principalColumn: "Id",
@@ -136,7 +128,8 @@ namespace DigitalMenuApi.Migrations
                     StoreId = table.Column<int>(nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime", nullable: false),
                     IsAvailable = table.Column<bool>(nullable: false),
-                    UILink = table.Column<string>(nullable: true)
+                    UILink = table.Column<string>(nullable: true),
+                    name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -160,8 +153,10 @@ namespace DigitalMenuApi.Migrations
                     Location = table.Column<int>(nullable: true),
                     BoxTypeId = table.Column<int>(nullable: true),
                     Src = table.Column<string>(nullable: true),
-                    HeaderId = table.Column<int>(nullable: true),
-                    FooterId = table.Column<int>(nullable: true)
+                    HeaderTitle = table.Column<string>(nullable: true),
+                    FooterTitle = table.Column<string>(nullable: true),
+                    HeaderSrc = table.Column<string>(nullable: true),
+                    FooterSrc = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -170,18 +165,6 @@ namespace DigitalMenuApi.Migrations
                         name: "FK_Box_ContainerType",
                         column: x => x.BoxTypeId,
                         principalTable: "BoxType",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Box_Session1",
-                        column: x => x.FooterId,
-                        principalTable: "Session",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Box_Session",
-                        column: x => x.HeaderId,
-                        principalTable: "Session",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -282,19 +265,14 @@ namespace DigitalMenuApi.Migrations
                 column: "BoxTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Box_FooterId",
-                table: "Box",
-                column: "FooterId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Box_HeaderId",
-                table: "Box",
-                column: "HeaderId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Box_TemplateId",
                 table: "Box",
                 column: "TemplateId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Product_StoreId",
+                table: "Product",
+                column: "StoreId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductList_BoxId",
@@ -344,7 +322,7 @@ namespace DigitalMenuApi.Migrations
                 name: "ScreenTemplate");
 
             migrationBuilder.DropTable(
-                name: "AcountRole");
+                name: "AccountRole");
 
             migrationBuilder.DropTable(
                 name: "Product");
@@ -360,9 +338,6 @@ namespace DigitalMenuApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "BoxType");
-
-            migrationBuilder.DropTable(
-                name: "Session");
 
             migrationBuilder.DropTable(
                 name: "Template");

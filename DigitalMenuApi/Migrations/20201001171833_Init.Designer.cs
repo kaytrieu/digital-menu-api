@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DigitalMenuApi.Migrations
 {
     [DbContext(typeof(DigitalMenuBoxContext))]
-    [Migration("20200930043200_InitalMigration")]
-    partial class InitalMigration
+    [Migration("20201001171833_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -31,7 +31,7 @@ namespace DigitalMenuApi.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
-                    b.Property<int>("StoreId")
+                    b.Property<int?>("StoreId")
                         .HasColumnType("int");
 
                     b.Property<string>("Token")
@@ -48,7 +48,7 @@ namespace DigitalMenuApi.Migrations
                     b.ToTable("Account");
                 });
 
-            modelBuilder.Entity("DigitalMenuApi.Models.AcountRole", b =>
+            modelBuilder.Entity("DigitalMenuApi.Models.AccountRole", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -63,7 +63,7 @@ namespace DigitalMenuApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AcountRole");
+                    b.ToTable("AccountRole");
                 });
 
             modelBuilder.Entity("DigitalMenuApi.Models.Box", b =>
@@ -76,11 +76,17 @@ namespace DigitalMenuApi.Migrations
                     b.Property<int?>("BoxTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("FooterId")
-                        .HasColumnType("int");
+                    b.Property<string>("FooterSrc")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("HeaderId")
-                        .HasColumnType("int");
+                    b.Property<string>("FooterTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HeaderSrc")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HeaderTitle")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Location")
                         .HasColumnType("int");
@@ -97,10 +103,6 @@ namespace DigitalMenuApi.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BoxTypeId");
-
-                    b.HasIndex("FooterId");
-
-                    b.HasIndex("HeaderId");
 
                     b.HasIndex("TemplateId");
 
@@ -143,10 +145,15 @@ namespace DigitalMenuApi.Migrations
                     b.Property<string>("Src")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("StoreId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("StoreId");
 
                     b.ToTable("Product");
                 });
@@ -243,27 +250,6 @@ namespace DigitalMenuApi.Migrations
                     b.ToTable("ScreenTemplate");
                 });
 
-            modelBuilder.Entity("DigitalMenuApi.Models.Session", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Src")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Session");
-                });
-
             modelBuilder.Entity("DigitalMenuApi.Models.Store", b =>
                 {
                     b.Property<int>("Id")
@@ -297,6 +283,10 @@ namespace DigitalMenuApi.Migrations
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Name")
+                        .HasColumnName("name")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("StoreId")
                         .HasColumnType("int");
 
@@ -313,7 +303,7 @@ namespace DigitalMenuApi.Migrations
 
             modelBuilder.Entity("DigitalMenuApi.Models.Account", b =>
                 {
-                    b.HasOne("DigitalMenuApi.Models.AcountRole", "Role")
+                    b.HasOne("DigitalMenuApi.Models.AccountRole", "Role")
                         .WithMany("Account")
                         .HasForeignKey("RoleId")
                         .HasConstraintName("FK_Account_AcountRole")
@@ -322,8 +312,7 @@ namespace DigitalMenuApi.Migrations
                     b.HasOne("DigitalMenuApi.Models.Store", "Store")
                         .WithMany("Account")
                         .HasForeignKey("StoreId")
-                        .HasConstraintName("FK_Account_Store")
-                        .IsRequired();
+                        .HasConstraintName("FK_Account_Store");
                 });
 
             modelBuilder.Entity("DigitalMenuApi.Models.Box", b =>
@@ -333,21 +322,19 @@ namespace DigitalMenuApi.Migrations
                         .HasForeignKey("BoxTypeId")
                         .HasConstraintName("FK_Box_ContainerType");
 
-                    b.HasOne("DigitalMenuApi.Models.Session", "Footer")
-                        .WithMany("BoxFooter")
-                        .HasForeignKey("FooterId")
-                        .HasConstraintName("FK_Box_Session1");
-
-                    b.HasOne("DigitalMenuApi.Models.Session", "Header")
-                        .WithMany("BoxHeader")
-                        .HasForeignKey("HeaderId")
-                        .HasConstraintName("FK_Box_Session");
-
                     b.HasOne("DigitalMenuApi.Models.Template", "Template")
                         .WithMany("Box")
                         .HasForeignKey("TemplateId")
                         .HasConstraintName("FK_Container_Template")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DigitalMenuApi.Models.Product", b =>
+                {
+                    b.HasOne("DigitalMenuApi.Models.Store", "Store")
+                        .WithMany("Product")
+                        .HasForeignKey("StoreId")
+                        .HasConstraintName("FK_Product_Store");
                 });
 
             modelBuilder.Entity("DigitalMenuApi.Models.ProductList", b =>

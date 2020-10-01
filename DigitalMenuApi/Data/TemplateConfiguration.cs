@@ -15,6 +15,8 @@ namespace DigitalMenuApi.Data
 
             entity.Property(e => e.Description).IsRequired();
 
+            entity.Property(e => e.Name).HasColumnName("name");
+
             entity.Property(e => e.Uilink).HasColumnName("UILink");
 
             entity.HasOne(d => d.Store)

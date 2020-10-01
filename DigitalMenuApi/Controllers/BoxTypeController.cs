@@ -1,12 +1,10 @@
-using System;
+using DigitalMenuApi.Data;
+using DigitalMenuApi.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DigitalMenuApi.Data;
-using DigitalMenuApi.Models;
 
 namespace DigitalMenuApi.Controllers
 {
@@ -32,7 +30,7 @@ namespace DigitalMenuApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<BoxType>> GetBoxType(int id)
         {
-            var boxType = await _context.BoxType.FindAsync(id);
+            BoxType boxType = await _context.BoxType.FindAsync(id);
 
             if (boxType == null)
             {
@@ -104,7 +102,7 @@ namespace DigitalMenuApi.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<BoxType>> DeleteBoxType(int id)
         {
-            var boxType = await _context.BoxType.FindAsync(id);
+            BoxType boxType = await _context.BoxType.FindAsync(id);
             if (boxType == null)
             {
                 return NotFound();

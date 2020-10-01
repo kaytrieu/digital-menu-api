@@ -17,12 +17,12 @@ namespace DigitalMenuApi.Models
         public int? Location { get; set; }
         public int? BoxTypeId { get; set; }
         public string Src { get; set; }
-        public int? HeaderId { get; set; }
-        public int? FooterId { get; set; }
+        public string HeaderTitle { get; set; }
+        public string FooterTitle { get; set; }
+        public string HeaderSrc { get; set; }
+        public string FooterSrc { get; set; }
 
         public virtual BoxType BoxType { get; set; }
-        public virtual Session Footer { get; set; }
-        public virtual Session Header { get; set; }
         public virtual Template Template { get; set; }
         public virtual ICollection<ProductList> ProductList { get; set; }
     }

@@ -8,10 +8,10 @@ namespace DigitalMenuApi.Models
     {
         public int Id { get; set; }
         public string Token { get; set; }
-        public int StoreId { get; set; }
+        public int? StoreId { get; set; }
         public int RoleId { get; set; }
 
-        public virtual AcountRole Role { get; set; }
+        public virtual AccountRole Role { get; set; }
         public virtual Store Store { get; set; }
     }
 }

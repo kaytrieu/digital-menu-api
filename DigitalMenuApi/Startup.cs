@@ -1,4 +1,7 @@
+using AutoMapper;
 using DigitalMenuApi.Data;
+using DigitalMenuApi.Repository;
+using DigitalMenuApi.Repository.Implement;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +9,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System;
 
 namespace DigitalMenuApi
 {
@@ -24,14 +30,34 @@ namespace DigitalMenuApi
 
             int apiVersion = Configuration.GetValue<int>("Version");
             //services.AddTransient<DbContext, DigitalMenuBoxContext>();
-            services.AddDbContext<DigitalMenuBoxContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("AzureDigitalMenuAPI")));
-            
+            services.AddDbContext<DigitalMenuBoxContext>(opt =>
+            {
+                opt.UseSqlServer(Configuration.GetConnectionString("AzureDigitalMenuAPI"));
+            });
+
+            //Json for Patch
+            services.AddControllers().AddNewtonsoftJson(
+                s =>
+                {
+                    s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    s.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                }
+            );
+
+
+            //Add AutoMapper
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            //Add DI for repository
+            services.AddScoped<DbContext, DigitalMenuBoxContext>();
+            services.AddScoped<IAccountRepository, AccountRepository>();
+
             //(Configuration.GetConnectionString("Digital_Menu_Box")));
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v" + apiVersion, new OpenApiInfo { Title = "Feedback System API", Version = "v" + apiVersion });
+                c.SwaggerDoc("v" + apiVersion, new OpenApiInfo { Title = "Digital Menu Api", Version = "v" + apiVersion });
             });
         }
 
@@ -53,7 +79,7 @@ namespace DigitalMenuApi
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v" + apiVersion + "/swagger.json", "Feedback System API");
+                c.SwaggerEndpoint("/swagger/v" + apiVersion + "/swagger.json", "Digital Menu Api");
             });
 
             app.UseHttpsRedirection();

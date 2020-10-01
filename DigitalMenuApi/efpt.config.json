@@ -1,5 +1,5 @@
 ﻿{
-   "ContextClassName": "Digital_Menu_BoxContext",
+   "ContextClassName": "DigitalMenuBoxContext",
    "ContextNamespace": null,
    "DefaultDacpacSchema": null,
    "FilterSchemas": false,
@@ -18,7 +18,7 @@
       },
       {
          "HasPrimaryKey": true,
-         "Name": "[dbo].[AcountRole]"
+         "Name": "[dbo].[AccountRole]"
       },
       {
          "HasPrimaryKey": true,
@@ -47,10 +47,6 @@
       {
          "HasPrimaryKey": true,
          "Name": "[dbo].[ScreenTemplate]"
-      },
-      {
-         "HasPrimaryKey": true,
-         "Name": "[dbo].[Session]"
       },
       {
          "HasPrimaryKey": true,
