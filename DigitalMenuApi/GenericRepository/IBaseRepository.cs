@@ -1,21 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace ModelsFeedbackSystem.Repository
 {
-    public interface IBaseRepository<T> where T : class
+    public interface IBaseRepository<TEntity> where TEntity : class
     {
 
-        IEnumerable<T> GetAll();
-        T Get(object id);
-        void Add(T t);
-        void Delete(object key);
-        void Update(object key, T items);
+        IQueryable<TEntity> GetAll(params Expression<Func<TEntity, object>>[] including);
+        TEntity Get(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including);
+        void Add(TEntity t);
+        void Delete(TEntity t);
+        void Update(object key, TEntity items);
         int SaveChanges();
         Task<int> SaveChangesAsync();
 

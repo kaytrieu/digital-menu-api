@@ -10,14 +10,11 @@ namespace DigitalMenuApi.Data
     {
         public DigitalMenuBoxContext()
         {
-            this.ChangeTracker.LazyLoadingEnabled = false;
-
         }
 
         public DigitalMenuBoxContext(DbContextOptions<DigitalMenuBoxContext> options)
             : base(options)
         {
-            this.ChangeTracker.LazyLoadingEnabled = false;
         }
 
         public virtual DbSet<Account> Account { get; set; }
@@ -37,6 +34,7 @@ namespace DigitalMenuApi.Data
             modelBuilder.ApplyConfiguration(new AccountConfiguration());
             modelBuilder.ApplyConfiguration(new BoxConfiguration());
             modelBuilder.ApplyConfiguration(new BoxTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductConfiguration());
             modelBuilder.ApplyConfiguration(new ProductListConfiguration());
             modelBuilder.ApplyConfiguration(new ProductListProductConfiguration());
             modelBuilder.ApplyConfiguration(new ScreenConfiguration());

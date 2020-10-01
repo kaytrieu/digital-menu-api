@@ -32,13 +32,15 @@ namespace DigitalMenuApi
             //services.AddTransient<DbContext, DigitalMenuBoxContext>();
             services.AddDbContext<DigitalMenuBoxContext>(opt =>
             {
-                opt.UseSqlServer(Configuration.GetConnectionString("Digital_Menu_Box"));
+                opt.UseSqlServer(Configuration.GetConnectionString("AzureDigitalMenuAPI"));
             });
 
             //Json for Patch
             services.AddControllers().AddNewtonsoftJson(
-                s => { s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver(); 
-                s.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                s =>
+                {
+                    s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    s.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 }
             );
 
@@ -77,7 +79,7 @@ namespace DigitalMenuApi
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v" + apiVersion + "/swagger.json", "Feedback System API");
+                c.SwaggerEndpoint("/swagger/v" + apiVersion + "/swagger.json", "Digital Menu Api");
             });
 
             app.UseHttpsRedirection();

@@ -1,12 +1,10 @@
-﻿using System;
+﻿using DigitalMenuApi.Data;
+using DigitalMenuApi.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DigitalMenuApi.Data;
-using DigitalMenuApi.Models;
 
 namespace DigitalMenuApi.Controllers
 {
@@ -32,7 +30,7 @@ namespace DigitalMenuApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<AccountRole>> GetAccountRole(int id)
         {
-            var AccountRole = await _context.AccountRole.FindAsync(id);
+            AccountRole AccountRole = await _context.AccountRole.FindAsync(id);
 
             if (AccountRole == null)
             {
@@ -104,7 +102,7 @@ namespace DigitalMenuApi.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<AccountRole>> DeleteAccountRole(int id)
         {
-            var AccountRole = await _context.AccountRole.FindAsync(id);
+            AccountRole AccountRole = await _context.AccountRole.FindAsync(id);
             if (AccountRole == null)
             {
                 return NotFound();

@@ -29,7 +29,7 @@ namespace DigitalMenuApi.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
-                    b.Property<int>("StoreId")
+                    b.Property<int?>("StoreId")
                         .HasColumnType("int");
 
                     b.Property<string>("Token")
@@ -74,16 +74,16 @@ namespace DigitalMenuApi.Migrations
                     b.Property<int?>("BoxTypeId")
                         .HasColumnType("int");
 
+                    b.Property<string>("FooterSrc")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FooterTitle")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FooterUrl")
+                    b.Property<string>("HeaderSrc")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HeaderTitle")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("HeaderUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Location")
@@ -143,10 +143,15 @@ namespace DigitalMenuApi.Migrations
                     b.Property<string>("Src")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("StoreId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("StoreId");
 
                     b.ToTable("Product");
                 });
@@ -276,6 +281,10 @@ namespace DigitalMenuApi.Migrations
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Name")
+                        .HasColumnName("name")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("StoreId")
                         .HasColumnType("int");
 
@@ -295,14 +304,13 @@ namespace DigitalMenuApi.Migrations
                     b.HasOne("DigitalMenuApi.Models.AccountRole", "Role")
                         .WithMany("Account")
                         .HasForeignKey("RoleId")
-                        .HasConstraintName("FK_Account_AccountRole")
+                        .HasConstraintName("FK_Account_AcountRole")
                         .IsRequired();
 
                     b.HasOne("DigitalMenuApi.Models.Store", "Store")
                         .WithMany("Account")
                         .HasForeignKey("StoreId")
-                        .HasConstraintName("FK_Account_Store")
-                        .IsRequired();
+                        .HasConstraintName("FK_Account_Store");
                 });
 
             modelBuilder.Entity("DigitalMenuApi.Models.Box", b =>
@@ -317,6 +325,14 @@ namespace DigitalMenuApi.Migrations
                         .HasForeignKey("TemplateId")
                         .HasConstraintName("FK_Container_Template")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DigitalMenuApi.Models.Product", b =>
+                {
+                    b.HasOne("DigitalMenuApi.Models.Store", "Store")
+                        .WithMany("Product")
+                        .HasForeignKey("StoreId")
+                        .HasConstraintName("FK_Product_Store");
                 });
 
             modelBuilder.Entity("DigitalMenuApi.Models.ProductList", b =>

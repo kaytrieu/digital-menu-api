@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DigitalMenuApi.Data;
+﻿using AutoMapper;
+using DigitalMenuApi.Dtos.AccountDtos;
 using DigitalMenuApi.Models;
-using DigitalMenuApi.Repository.Implement;
 using DigitalMenuApi.Repository;
-using AutoMapper;
-using DigitalMenuApi.Dtos;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace DigitalMenuApi.Controllers
 {
@@ -31,103 +24,82 @@ namespace DigitalMenuApi.Controllers
         [HttpGet]
         public ActionResult GetAccount()
         {
-            IEnumerable<Account> accounts = _repository.GetAll();
+            IEnumerable<Account> accounts = _repository.GetAll(x => x.Role, x => x.Store);
             return Ok(_mapper.Map<IEnumerable<AccountReadDto>>(accounts));
             //return Ok(accounts);
         }
 
 
-        //    // GET: api/Accounts/5
-        //    [HttpGet("{id}")]
-        //    public async Task<ActionResult<Account>> GetAccount(int id)
-        //    {
-        //        var account = await _context.Account.FindAsync(id);
+        // GET: api/Accounts/5
+        [HttpGet("{id}")]
+        public ActionResult GetAccount(int id)
+        {
+            Account account = _repository.Get(x => x.Id == id, x => x.Role, x => x.Store);
 
-        //        if (account == null)
-        //        {
-        //            return NotFound();
-        //        }
+            if (account == null)
+            {
+                return NotFound();
+            }
 
-        //        return account;
-        //    }
+            return Ok(_mapper.Map<AccountReadDto>(account));
+        }
 
-        //    // PUT: api/Accounts/5
-        //    // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        //    // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        //    [HttpPut("{id}")]
-        //    public async Task<IActionResult> PutAccount(int id, Account account)
-        //    {
-        //        if (id != account.Id)
-        //        {
-        //            return BadRequest();
-        //        }
+        // PUT: api/Accounts/5
+        [HttpPut("{id}")]
+        public IActionResult PutAccount(int id, AccountUpdateDto accountUpdateDto)
+        {
+            Account accountFromRepo = _repository.Get(x => x.Id == id, x => x.Role, x => x.Store);
 
-        //        _context.Entry(account).State = EntityState.Modified;
+            if (accountFromRepo == null)
+            {
+                return NotFound();
+            }
 
-        //        try
-        //        {
-        //            await _context.SaveChangesAsync();
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!AccountExists(id))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
+            //Mapper to Update
+            _mapper.Map(accountUpdateDto, accountFromRepo);
 
-        //        return NoContent();
-        //    }
+            _repository.Update(id, accountFromRepo);
+            _repository.SaveChanges();
 
-        //    // POST: api/Accounts
-        //    // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        //    // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        //    [HttpPost]
-        //    public async Task<ActionResult<Account>> PostAccount(Account account)
-        //    {
-        //        _context.Account.Add(account);
-        //        try
-        //        {
-        //            await _context.SaveChangesAsync();
-        //        }
-        //        catch (DbUpdateException)
-        //        {
-        //            if (AccountExists(account.Id))
-        //            {
-        //                return Conflict();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
 
-        //        return CreatedAtAction("GetAccount", new { id = account.Id }, account);
-        //    }
+            return NoContent();
+        }
 
-        //    // DELETE: api/Accounts/5
-        //    [HttpDelete("{id}")]
-        //    public async Task<ActionResult<Account>> DeleteAccount(int id)
-        //    {
-        //        var account = await _context.Account.FindAsync(id);
-        //        if (account == null)
-        //        {
-        //            return NotFound();
-        //        }
+        // POST: api/Accounts
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for
+        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        [HttpPost]
+        public ActionResult PostAccount(AccountCreateDto accountCreateDto)
+        {
+            Account accountModel = _mapper.Map<Account>(accountCreateDto);
 
-        //        _context.Account.Remove(account);
-        //        await _context.SaveChangesAsync();
+            _repository.Add(accountModel);
+            _repository.SaveChanges();
 
-        //        return account;
-        //    }
+            AccountReadDto accountReadDto = _mapper.Map<AccountReadDto>(accountModel);
 
-        //    private bool AccountExists(int id)
-        //    {
-        //        return _context.Account.Any(e => e.Id == id);
-        //    }
+            return CreatedAtAction("GetAccount", new { id = accountReadDto.Id }, accountCreateDto);
+
+        }
+
+        // DELETE: api/Accounts/5
+        [HttpDelete("{id}")]
+        public ActionResult DeleteAccount(int id)
+        {
+            Account accountFromRepo = _repository.Get(x => x.Id == id);
+
+            if (accountFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            _repository.Delete(accountFromRepo);
+
+            _repository.SaveChanges();
+
+            return NoContent();
+        }
+
+
     }
 }

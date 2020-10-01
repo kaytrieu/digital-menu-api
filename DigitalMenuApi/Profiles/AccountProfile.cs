@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using DigitalMenuApi.Dtos;
+using DigitalMenuApi.Dtos.AccountDtos;
 using DigitalMenuApi.Models;
 
 namespace DigitalMenuApi.Profiles
@@ -10,9 +10,11 @@ namespace DigitalMenuApi.Profiles
         {
             //Source to Target
             CreateMap<Account, AccountReadDto>();
-                //.ForMember(dest => dest.StoreName, opt => opt.MapFrom(src => src.Store.Name))
-                //.ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role.Name));
+            CreateMap<AccountUpdateDto, Account>();
+            CreateMap<AccountCreateDto, Account>();
+            //.ForMember(dest => dest.StoreName, opt => opt.MapFrom(src => src.Store.Name))
+            //.ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role.Name));
         }
-        
+
     }
 }

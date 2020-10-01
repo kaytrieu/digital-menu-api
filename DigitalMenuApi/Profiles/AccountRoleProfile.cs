@@ -12,6 +12,6 @@ namespace DigitalMenuApi.Profiles
 
             CreateMap<AccountRole, AccountRoleReadDto>();
         }
-        
+
     }
 }
