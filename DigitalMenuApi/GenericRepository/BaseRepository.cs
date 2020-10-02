@@ -48,25 +48,6 @@ namespace ModelsFeedbackSystem.GenericRepository
             return query.Where(predicate).FirstOrDefault<TEntity>();
         }
 
-
-        //public IEnumerable<T> GetAll(Expression<Func<T, bool>> expression = null)
-        //{
-        //        return _dbSet.AsEnumerable();
-
-        //}
-
-        //public IQueryable<T> GetAll(params string[] including)
-        //{
-        //    var query = _dbSet.AsQueryable();
-        //    if (including != null)
-        //        including.ToList().ForEach(include =>
-        //        {
-        //            if (!string.IsNullOrEmpty(include))
-        //                query = query.Include(include);
-        //        });
-        //    return query;
-        //}
-
         public int SaveChanges()
         {
             return _dbContext.SaveChanges();
@@ -77,16 +58,9 @@ namespace ModelsFeedbackSystem.GenericRepository
             return _dbContext.SaveChangesAsync();
         }
 
-        public void Update(object key, TEntity items)
+        public void Update(TEntity items)
         {
             //Default is nothing
-
-            //// _dbSet.Update(items);
-            //T exist = _dbSet.Find(key);
-            //if (exist != null)
-            //{
-            //    _dbContext.Entry(exist).CurrentValues.SetValues(items);
-            //}
         }
 
         public IQueryable<TEntity> GetAll(params Expression<Func<TEntity, object>>[] including)

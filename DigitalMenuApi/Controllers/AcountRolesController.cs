@@ -1,10 +1,10 @@
-﻿using DigitalMenuApi.Data;
+﻿using AutoMapper;
+using DigitalMenuApi.Dtos.AccountRoleDtos;
 using DigitalMenuApi.Models;
+using DigitalMenuApi.Repository;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DigitalMenuApi.Controllers
 {
@@ -12,62 +12,57 @@ namespace DigitalMenuApi.Controllers
     [ApiController]
     public class AccountRolesController : ControllerBase
     {
-        private readonly DigitalMenuBoxContext _context;
+        private readonly IAccountRoleRepository _repository;
+        private readonly IMapper _mapper;
 
-        public AccountRolesController(DigitalMenuBoxContext context)
+        public AccountRolesController(IAccountRoleRepository repository, IMapper mapper)
         {
-            _context = context;
+            _repository = repository;
+            _mapper = mapper;
         }
 
         // GET: api/AccountRoles
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AccountRole>>> GetAccountRole()
+        public IActionResult GetAccountRole()
         {
-            return await _context.AccountRole.ToListAsync();
+            IEnumerable<AccountRole> AccountRoles = _repository.GetAll();
+            return Ok(_mapper.Map<IEnumerable<AccountRoleReadDto>>(AccountRoles));
+            //return Ok(AccountRoles);
         }
+
 
         // GET: api/AccountRoles/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<AccountRole>> GetAccountRole(int id)
+        public ActionResult<AccountRoleReadDto> GetAccountRole(int id)
         {
-            AccountRole AccountRole = await _context.AccountRole.FindAsync(id);
+            AccountRole AccountRole = _repository.Get(x => x.Id == id);
 
             if (AccountRole == null)
             {
                 return NotFound();
             }
 
-            return AccountRole;
+            return Ok(_mapper.Map<AccountRoleReadDto>(AccountRole));
         }
 
         // PUT: api/AccountRoles/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAccountRole(int id, AccountRole AccountRole)
+        public IActionResult PutAccountRole(int id, AccountRoleUpdateDto AccountRoleUpdateDto)
         {
-            if (id != AccountRole.Id)
+            AccountRole AccountRoleFromRepo = _repository.Get(x => x.Id == id);
+
+            if (AccountRoleFromRepo == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(AccountRole).State = EntityState.Modified;
+            //Mapper to Update
+            _mapper.Map(AccountRoleUpdateDto, AccountRoleFromRepo);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AccountRoleExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _repository.Update(AccountRoleFromRepo);
+
+            _repository.SaveChanges();
+
 
             return NoContent();
         }
@@ -76,47 +71,66 @@ namespace DigitalMenuApi.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<AccountRole>> PostAccountRole(AccountRole AccountRole)
+        public IActionResult PostAccountRole(AccountRoleCreateDto AccountRoleCreateDto)
         {
-            _context.AccountRole.Add(AccountRole);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (AccountRoleExists(AccountRole.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            AccountRole AccountRoleModel = _mapper.Map<AccountRole>(AccountRoleCreateDto);
 
-            return CreatedAtAction("GetAccountRole", new { id = AccountRole.Id }, AccountRole);
+            _repository.Add(AccountRoleModel);
+            _repository.SaveChanges();
+
+            AccountRoleReadDto AccountRoleReadDto = _mapper.Map<AccountRoleReadDto>(AccountRoleModel);
+
+            return CreatedAtAction("GetAccountRole", new { id = AccountRoleReadDto.Id }, AccountRoleCreateDto);
+
         }
 
         // DELETE: api/AccountRoles/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<AccountRole>> DeleteAccountRole(int id)
+        public IActionResult DeleteAccountRole(int id)
         {
-            AccountRole AccountRole = await _context.AccountRole.FindAsync(id);
-            if (AccountRole == null)
+            AccountRole AccountRoleFromRepo = _repository.Get(x => x.Id == id);
+
+            if (AccountRoleFromRepo == null)
             {
                 return NotFound();
             }
 
-            _context.AccountRole.Remove(AccountRole);
-            await _context.SaveChangesAsync();
+            _repository.Delete(AccountRoleFromRepo);
 
-            return AccountRole;
+            _repository.SaveChanges();
+
+            return NoContent();
         }
 
-        private bool AccountRoleExists(int id)
+        //Patch
+        [HttpPatch("{id}")]
+        public IActionResult PatchAccountRole(int id, JsonPatchDocument<AccountRoleUpdateDto> patchDoc)
         {
-            return _context.AccountRole.Any(e => e.Id == id);
+            var AccountRoleModelFromRepo = _repository.Get(x => x.Id == id);
+
+            if (AccountRoleModelFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            var AccountRoleToPatch = _mapper.Map<AccountRoleUpdateDto>(AccountRoleModelFromRepo);
+
+            patchDoc.ApplyTo(AccountRoleToPatch, ModelState);
+
+            if (!TryValidateModel(AccountRoleToPatch))
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            //Update the DTO to repo
+            _mapper.Map(AccountRoleToPatch, AccountRoleModelFromRepo);
+
+            //Temp is not doing nothing
+            _repository.Update(AccountRoleModelFromRepo);
+
+            _repository.SaveChanges();
+
+            return NoContent();
         }
     }
 }
