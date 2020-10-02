@@ -1,10 +1,10 @@
-﻿using DigitalMenuApi.Data;
+﻿using AutoMapper;
+using DigitalMenuApi.Dtos.BoxDtos;
 using DigitalMenuApi.Models;
+using DigitalMenuApi.Repository;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DigitalMenuApi.Controllers
 {
@@ -12,111 +12,125 @@ namespace DigitalMenuApi.Controllers
     [ApiController]
     public class BoxesController : ControllerBase
     {
-        private readonly DigitalMenuBoxContext _context;
+        private readonly IBoxRepository _repository;
+        private readonly IMapper _mapper;
 
-        public BoxesController(DigitalMenuBoxContext context)
+        public BoxesController(IBoxRepository repository, IMapper mapper)
         {
-            _context = context;
+            _repository = repository;
+            _mapper = mapper;
         }
 
-        // GET: api/Boxes
+        // GET: api/Boxs
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Box>>> GetBox()
+        public IActionResult GetBox()
         {
-            return await _context.Box.ToListAsync();
+            IEnumerable<Box> Boxs = _repository.GetAll();
+            return Ok(_mapper.Map<IEnumerable<BoxReadDto>>(Boxs));
+            //return Ok(Boxs);
         }
 
-        // GET: api/Boxes/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Box>> GetBox(int id)
-        {
-            Box box = await _context.Box.FindAsync(id);
 
-            if (box == null)
+        // GET: api/Boxs/5
+        [HttpGet("{id}")]
+        public ActionResult<BoxReadDto> GetBox(int id)
+        {
+            Box Box = _repository.Get(x => x.Id == id);
+
+            if (Box == null)
             {
                 return NotFound();
             }
 
-            return box;
+            return Ok(_mapper.Map<BoxReadDto>(Box));
         }
 
-        // PUT: api/Boxes/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        // PUT: api/Boxs/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBox(int id, Box box)
+        public IActionResult PutBox(int id, BoxUpdateDto BoxUpdateDto)
         {
-            if (id != box.Id)
+            Box BoxFromRepo = _repository.Get(x => x.Id == id);
+
+            if (BoxFromRepo == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(box).State = EntityState.Modified;
+            //Mapper to Update
+            _mapper.Map(BoxUpdateDto, BoxFromRepo);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BoxExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _repository.Update(BoxFromRepo);
+
+            _repository.SaveChanges();
+
 
             return NoContent();
         }
 
-        // POST: api/Boxes
+        // POST: api/Boxs
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Box>> PostBox(Box box)
+        public IActionResult PostBox(BoxCreateDto BoxCreateDto)
         {
-            _context.Box.Add(box);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (BoxExists(box.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            Box BoxModel = _mapper.Map<Box>(BoxCreateDto);
 
-            return CreatedAtAction("GetBox", new { id = box.Id }, box);
+            _repository.Add(BoxModel);
+            _repository.SaveChanges();
+
+            BoxReadDto BoxReadDto = _mapper.Map<BoxReadDto>(BoxModel);
+
+            return CreatedAtAction("GetBox", new { id = BoxReadDto.Id }, BoxCreateDto);
+
         }
 
-        // DELETE: api/Boxes/5
+        // DELETE: api/Boxs/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Box>> DeleteBox(int id)
+        public IActionResult DeleteBox(int id)
         {
-            Box box = await _context.Box.FindAsync(id);
-            if (box == null)
+            Box BoxFromRepo = _repository.Get(x => x.Id == id);
+
+            if (BoxFromRepo == null)
             {
                 return NotFound();
             }
 
-            _context.Box.Remove(box);
-            await _context.SaveChangesAsync();
+            _repository.Delete(BoxFromRepo);
 
-            return box;
+            _repository.SaveChanges();
+
+            return NoContent();
         }
 
-        private bool BoxExists(int id)
+        //Patch
+        [HttpPatch("{id}")]
+        public IActionResult PatchBox(int id, JsonPatchDocument<BoxUpdateDto> patchDoc)
         {
-            return _context.Box.Any(e => e.Id == id);
+            var BoxModelFromRepo = _repository.Get(x => x.Id == id);
+
+            if (BoxModelFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            var BoxToPatch = _mapper.Map<BoxUpdateDto>(BoxModelFromRepo);
+
+            patchDoc.ApplyTo(BoxToPatch, ModelState);
+
+            if (!TryValidateModel(BoxToPatch))
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            //Update the DTO to repo
+            _mapper.Map(BoxToPatch, BoxModelFromRepo);
+
+            //Temp is not doing nothing
+            _repository.Update(BoxModelFromRepo);
+
+            _repository.SaveChanges();
+
+            return NoContent();
         }
     }
 }

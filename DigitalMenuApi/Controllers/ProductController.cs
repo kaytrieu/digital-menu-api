@@ -1,122 +1,136 @@
-using DigitalMenuApi.Data;
+using AutoMapper;
+using DigitalMenuApi.Dtos.ProductDtos;
 using DigitalMenuApi.Models;
+using DigitalMenuApi.Repository;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DigitalMenuApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductController : ControllerBase
+    public class ProductsController : ControllerBase
     {
-        private readonly DigitalMenuBoxContext _context;
+        private readonly IProductRepository _repository;
+        private readonly IMapper _mapper;
 
-        public ProductController(DigitalMenuBoxContext context)
+        public ProductsController(IProductRepository repository, IMapper mapper)
         {
-            _context = context;
+            _repository = repository;
+            _mapper = mapper;
         }
 
-        // GET: api/Product
+        // GET: api/Products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProduct()
+        public IActionResult GetProduct()
         {
-            return await _context.Product.ToListAsync();
+            IEnumerable<Product> Products = _repository.GetAll(x => x.Store);
+            return Ok(_mapper.Map<IEnumerable<ProductReadDto>>(Products));
+            //return Ok(Products);
         }
 
-        // GET: api/Product/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(int id)
-        {
-            Product product = await _context.Product.FindAsync(id);
 
-            if (product == null)
+        // GET: api/Products/5
+        [HttpGet("{id}")]
+        public ActionResult<ProductReadDto> GetProduct(int id)
+        {
+            Product Product = _repository.Get(x => x.Id == id, x => x.Store);
+
+            if (Product == null)
             {
                 return NotFound();
             }
 
-            return product;
+            return Ok(_mapper.Map<ProductReadDto>(Product));
         }
 
-        // PUT: api/Product/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        // PUT: api/Products/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(int id, Product product)
+        public IActionResult PutProduct(int id, ProductUpdateDto ProductUpdateDto)
         {
-            if (id != product.Id)
+            Product ProductFromRepo = _repository.Get(x => x.Id == id);
+
+            if (ProductFromRepo == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(product).State = EntityState.Modified;
+            //Mapper to Update
+            _mapper.Map(ProductUpdateDto, ProductFromRepo);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _repository.Update(ProductFromRepo);
+
+            _repository.SaveChanges();
+
 
             return NoContent();
         }
 
-        // POST: api/Product
+        // POST: api/Products
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(Product product)
+        public IActionResult PostProduct(ProductCreateDto ProductCreateDto)
         {
-            _context.Product.Add(product);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (ProductExists(product.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            Product ProductModel = _mapper.Map<Product>(ProductCreateDto);
 
-            return CreatedAtAction("GetProduct", new { id = product.Id }, product);
+            _repository.Add(ProductModel);
+            _repository.SaveChanges();
+
+            ProductReadDto ProductReadDto = _mapper.Map<ProductReadDto>(ProductModel);
+
+            return CreatedAtAction("GetProduct", new { id = ProductReadDto.Id }, ProductCreateDto);
+
         }
 
-        // DELETE: api/Product/5
+        // DELETE: api/Products/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Product>> DeleteProduct(int id)
+        public IActionResult DeleteProduct(int id)
         {
-            Product product = await _context.Product.FindAsync(id);
-            if (product == null)
+            Product ProductFromRepo = _repository.Get(x => x.Id == id);
+
+            if (ProductFromRepo == null)
             {
                 return NotFound();
             }
 
-            _context.Product.Remove(product);
-            await _context.SaveChangesAsync();
+            _repository.Delete(ProductFromRepo);
 
-            return product;
+            _repository.SaveChanges();
+
+            return NoContent();
         }
 
-        private bool ProductExists(int id)
+        //Patch
+        [HttpPatch("{id}")]
+        public IActionResult PatchProduct(int id, JsonPatchDocument<ProductUpdateDto> patchDoc)
         {
-            return _context.Product.Any(e => e.Id == id);
+            var ProductModelFromRepo = _repository.Get(x => x.Id == id);
+
+            if (ProductModelFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            var ProductToPatch = _mapper.Map<ProductUpdateDto>(ProductModelFromRepo);
+
+            patchDoc.ApplyTo(ProductToPatch, ModelState);
+
+            if (!TryValidateModel(ProductToPatch))
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            //Update the DTO to repo
+            _mapper.Map(ProductToPatch, ProductModelFromRepo);
+
+            //Temp is not doing nothing
+            _repository.Update(ProductModelFromRepo);
+
+            _repository.SaveChanges();
+
+            return NoContent();
         }
     }
 }

@@ -8,6 +8,7 @@ namespace ModelsFeedbackSystem.Repository
     public interface IBaseRepository<TEntity> where TEntity : class
     {
 
+        IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including);
         IQueryable<TEntity> GetAll(params Expression<Func<TEntity, object>>[] including);
         TEntity Get(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including);
         void Add(TEntity t);
