@@ -1,4 +1,4 @@
-﻿namespace DigitalMenuApi.Dtos
+﻿namespace DigitalMenuApi.Dtos.AccountRoleDtos
 {
     public class AccountRoleReadDto
     {

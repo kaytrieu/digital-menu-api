@@ -1,5 +1,6 @@
 using AutoMapper;
 using DigitalMenuApi.Data;
+using DigitalMenuApi.Models;
 using DigitalMenuApi.Repository;
 using DigitalMenuApi.Repository.Implement;
 using Microsoft.AspNetCore.Builder;
@@ -51,6 +52,16 @@ namespace DigitalMenuApi
             //Add DI for repository
             services.AddScoped<DbContext, DigitalMenuBoxContext>();
             services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<IAccountRoleRepository, AccountRoleRepository>();
+            services.AddScoped<IBoxRepository, BoxRepository>();
+            services.AddScoped<IBoxTypeRepository, BoxTypeRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IProductListRepository, ProductListRepository>();
+            services.AddScoped<IProductListProductRepository, ProductListProductRepository>();
+            services.AddScoped<IScreenRepository, ScreenRepository>();
+            services.AddScoped<IScreenTemplateRepository, ScreenTemplateRepository>();
+            services.AddScoped<IStoreRepository, StoreRepository>();
+            services.AddScoped<ITemplateRepository, TemplateRepository>();
 
             //(Configuration.GetConnectionString("Digital_Menu_Box")));
 

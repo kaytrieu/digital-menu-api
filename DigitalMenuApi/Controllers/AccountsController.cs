@@ -2,6 +2,7 @@
 using DigitalMenuApi.Dtos.AccountDtos;
 using DigitalMenuApi.Models;
 using DigitalMenuApi.Repository;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
@@ -22,7 +23,7 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Accounts
         [HttpGet]
-        public ActionResult GetAccount()
+        public IActionResult GetAccount()
         {
             IEnumerable<Account> accounts = _repository.GetAll(x => x.Role, x => x.Store);
             return Ok(_mapper.Map<IEnumerable<AccountReadDto>>(accounts));
@@ -32,7 +33,7 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Accounts/5
         [HttpGet("{id}")]
-        public ActionResult GetAccount(int id)
+        public ActionResult<AccountReadDto> GetAccount(int id)
         {
             Account account = _repository.Get(x => x.Id == id, x => x.Role, x => x.Store);
 
@@ -58,7 +59,8 @@ namespace DigitalMenuApi.Controllers
             //Mapper to Update
             _mapper.Map(accountUpdateDto, accountFromRepo);
 
-            _repository.Update(id, accountFromRepo);
+            _repository.Update(accountFromRepo);
+
             _repository.SaveChanges();
 
 
@@ -66,10 +68,8 @@ namespace DigitalMenuApi.Controllers
         }
 
         // POST: api/Accounts
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public ActionResult PostAccount(AccountCreateDto accountCreateDto)
+        public IActionResult PostAccount(AccountCreateDto accountCreateDto)
         {
             Account accountModel = _mapper.Map<Account>(accountCreateDto);
 
@@ -84,7 +84,7 @@ namespace DigitalMenuApi.Controllers
 
         // DELETE: api/Accounts/5
         [HttpDelete("{id}")]
-        public ActionResult DeleteAccount(int id)
+        public IActionResult DeleteAccount(int id)
         {
             Account accountFromRepo = _repository.Get(x => x.Id == id);
 
@@ -94,6 +94,37 @@ namespace DigitalMenuApi.Controllers
             }
 
             _repository.Delete(accountFromRepo);
+
+            _repository.SaveChanges();
+
+            return NoContent();
+        }
+
+        //Patch
+        [HttpPatch("{id}")]
+        public IActionResult PatchAccount(int id, JsonPatchDocument<AccountUpdateDto> patchDoc)
+        {
+            var accountModelFromRepo = _repository.Get(x => x.Id == id);
+
+            if (accountModelFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            var accountToPatch = _mapper.Map<AccountUpdateDto>(accountModelFromRepo);
+
+            patchDoc.ApplyTo(accountToPatch, ModelState);
+
+            if (!TryValidateModel(accountToPatch))
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            //Update the DTO to repo
+            _mapper.Map(accountToPatch, accountModelFromRepo);
+
+            //Temp is not doing nothing
+            _repository.Update(accountModelFromRepo);
 
             _repository.SaveChanges();
 

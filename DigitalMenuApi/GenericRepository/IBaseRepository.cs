@@ -12,7 +12,7 @@ namespace ModelsFeedbackSystem.Repository
         TEntity Get(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including);
         void Add(TEntity t);
         void Delete(TEntity t);
-        void Update(object key, TEntity items);
+        void Update(TEntity items);
         int SaveChanges();
         Task<int> SaveChangesAsync();
 

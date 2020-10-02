@@ -4,11 +4,10 @@ using ModelsFeedbackSystem.GenericRepository;
 
 namespace DigitalMenuApi.Repository.Implement
 {
-    public class AccountRepository : BaseRepository<Account>, IAccountRepository
+    public class AccountRoleRepository : BaseRepository<AccountRole>, IAccountRoleRepository
     {
-        public AccountRepository(DigitalMenuBoxContext dbContext) : base(dbContext)
+        public AccountRoleRepository(DigitalMenuBoxContext dbContext) : base(dbContext)
         {
         }
-
     }
 }
