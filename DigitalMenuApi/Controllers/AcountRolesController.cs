@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace DigitalMenuApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/account-roles")]
     [ApiController]
     public class AccountRolesController : ControllerBase
     {

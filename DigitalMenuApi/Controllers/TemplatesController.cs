@@ -8,14 +8,14 @@ using System.Collections.Generic;
 
 namespace DigitalMenuApi.Controllers
 {
-    [Route("api/product-lists")]
+    [Route("api/[controller]")]
     [ApiController]
-    public class ProductListsController : ControllerBase
+    public class TemplatesController : ControllerBase
     {
         private readonly IProductListRepository _repository;
         private readonly IMapper _mapper;
 
-        public ProductListsController(IProductListRepository repository, IMapper mapper)
+        public TemplatesController(IProductListRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;

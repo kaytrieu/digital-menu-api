@@ -74,5 +74,17 @@ namespace ModelsFeedbackSystem.GenericRepository
                 });
             return query;
         }
+
+        public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including)
+        {
+            IQueryable<TEntity> query = _dbSet.AsQueryable();
+            if (including != null)
+                including.ToList().ForEach(include =>
+                {
+                    if (include != null)
+                        query = query.Include(include);
+                });
+            return query.Where(predicate);
+        }
     }
 }

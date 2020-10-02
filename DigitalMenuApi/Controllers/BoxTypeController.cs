@@ -1,122 +1,136 @@
-using DigitalMenuApi.Data;
+using AutoMapper;
+using DigitalMenuApi.Dtos.BoxTypeDtos;
 using DigitalMenuApi.Models;
+using DigitalMenuApi.Repository;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DigitalMenuApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/box-types")]
     [ApiController]
-    public class BoxTypeController : ControllerBase
+    public class BoxTypesController : ControllerBase
     {
-        private readonly DigitalMenuBoxContext _context;
+        private readonly IBoxTypeRepository _repository;
+        private readonly IMapper _mapper;
 
-        public BoxTypeController(DigitalMenuBoxContext context)
+        public BoxTypesController(IBoxTypeRepository repository, IMapper mapper)
         {
-            _context = context;
+            _repository = repository;
+            _mapper = mapper;
         }
 
-        // GET: api/BoxType
+        // GET: api/BoxTypes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BoxType>>> GetBoxType()
+        public IActionResult GetBoxType()
         {
-            return await _context.BoxType.ToListAsync();
+            IEnumerable<BoxType> BoxTypes = _repository.GetAll();
+            return Ok(_mapper.Map<IEnumerable<BoxTypeReadDto>>(BoxTypes));
+            //return Ok(BoxTypes);
         }
 
-        // GET: api/BoxType/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<BoxType>> GetBoxType(int id)
-        {
-            BoxType boxType = await _context.BoxType.FindAsync(id);
 
-            if (boxType == null)
+        // GET: api/BoxTypes/5
+        [HttpGet("{id}")]
+        public ActionResult<BoxTypeReadDto> GetBoxType(int id)
+        {
+            BoxType BoxType = _repository.Get(x => x.Id == id);
+
+            if (BoxType == null)
             {
                 return NotFound();
             }
 
-            return boxType;
+            return Ok(_mapper.Map<BoxTypeReadDto>(BoxType));
         }
 
-        // PUT: api/BoxType/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        // PUT: api/BoxTypes/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBoxType(int id, BoxType boxType)
+        public IActionResult PutBoxType(int id, BoxTypeUpdateDto BoxTypeUpdateDto)
         {
-            if (id != boxType.Id)
+            BoxType BoxTypeFromRepo = _repository.Get(x => x.Id == id);
+
+            if (BoxTypeFromRepo == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(boxType).State = EntityState.Modified;
+            //Mapper to Update
+            _mapper.Map(BoxTypeUpdateDto, BoxTypeFromRepo);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BoxTypeExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _repository.Update(BoxTypeFromRepo);
+
+            _repository.SaveChanges();
+
 
             return NoContent();
         }
 
-        // POST: api/BoxType
+        // POST: api/BoxTypes
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<BoxType>> PostBoxType(BoxType boxType)
+        public IActionResult PostBoxType(BoxTypeCreateDto BoxTypeCreateDto)
         {
-            _context.BoxType.Add(boxType);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (BoxTypeExists(boxType.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            BoxType BoxTypeModel = _mapper.Map<BoxType>(BoxTypeCreateDto);
 
-            return CreatedAtAction("GetBoxType", new { id = boxType.Id }, boxType);
+            _repository.Add(BoxTypeModel);
+            _repository.SaveChanges();
+
+            BoxTypeReadDto BoxTypeReadDto = _mapper.Map<BoxTypeReadDto>(BoxTypeModel);
+
+            return CreatedAtAction("GetBoxType", new { id = BoxTypeReadDto.Id }, BoxTypeCreateDto);
+
         }
 
-        // DELETE: api/BoxType/5
+        // DELETE: api/BoxTypes/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<BoxType>> DeleteBoxType(int id)
+        public IActionResult DeleteBoxType(int id)
         {
-            BoxType boxType = await _context.BoxType.FindAsync(id);
-            if (boxType == null)
+            BoxType BoxTypeFromRepo = _repository.Get(x => x.Id == id);
+
+            if (BoxTypeFromRepo == null)
             {
                 return NotFound();
             }
 
-            _context.BoxType.Remove(boxType);
-            await _context.SaveChangesAsync();
+            _repository.Delete(BoxTypeFromRepo);
 
-            return boxType;
+            _repository.SaveChanges();
+
+            return NoContent();
         }
 
-        private bool BoxTypeExists(int id)
+        //Patch
+        [HttpPatch("{id}")]
+        public IActionResult PatchBoxType(int id, JsonPatchDocument<BoxTypeUpdateDto> patchDoc)
         {
-            return _context.BoxType.Any(e => e.Id == id);
+            var BoxTypeModelFromRepo = _repository.Get(x => x.Id == id);
+
+            if (BoxTypeModelFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            var BoxTypeToPatch = _mapper.Map<BoxTypeUpdateDto>(BoxTypeModelFromRepo);
+
+            patchDoc.ApplyTo(BoxTypeToPatch, ModelState);
+
+            if (!TryValidateModel(BoxTypeToPatch))
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            //Update the DTO to repo
+            _mapper.Map(BoxTypeToPatch, BoxTypeModelFromRepo);
+
+            //Temp is not doing nothing
+            _repository.Update(BoxTypeModelFromRepo);
+
+            _repository.SaveChanges();
+
+            return NoContent();
         }
     }
 }

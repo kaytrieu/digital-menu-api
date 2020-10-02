@@ -1,122 +1,136 @@
-using DigitalMenuApi.Data;
+using AutoMapper;
+using DigitalMenuApi.Dtos.StoreDtos;
 using DigitalMenuApi.Models;
+using DigitalMenuApi.Repository;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DigitalMenuApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StoreController : ControllerBase
+    public class StoresController : ControllerBase
     {
-        private readonly DigitalMenuBoxContext _context;
+        private readonly IStoreRepository _repository;
+        private readonly IMapper _mapper;
 
-        public StoreController(DigitalMenuBoxContext context)
+        public StoresController(IStoreRepository repository, IMapper mapper)
         {
-            _context = context;
+            _repository = repository;
+            _mapper = mapper;
         }
 
-        // GET: api/Store
+        // GET: api/Stores
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Store>>> GetStore()
+        public IActionResult GetStore()
         {
-            return await _context.Store.ToListAsync();
+            IEnumerable<Store> Stores = _repository.GetAll();
+            return Ok(_mapper.Map<IEnumerable<StoreReadDto>>(Stores));
+            //return Ok(Stores);
         }
 
-        // GET: api/Store/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Store>> GetStore(int id)
-        {
-            Store store = await _context.Store.FindAsync(id);
 
-            if (store == null)
+        // GET: api/Stores/5
+        [HttpGet("{id}")]
+        public ActionResult<StoreReadDto> GetStore(int id)
+        {
+            Store Store = _repository.Get(x => x.Id == id);
+
+            if (Store == null)
             {
                 return NotFound();
             }
 
-            return store;
+            return Ok(_mapper.Map<StoreReadDto>(Store));
         }
 
-        // PUT: api/Store/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        // PUT: api/Stores/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutStore(int id, Store store)
+        public IActionResult PutStore(int id, StoreUpdateDto StoreUpdateDto)
         {
-            if (id != store.Id)
+            Store StoreFromRepo = _repository.Get(x => x.Id == id);
+
+            if (StoreFromRepo == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(store).State = EntityState.Modified;
+            //Mapper to Update
+            _mapper.Map(StoreUpdateDto, StoreFromRepo);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!StoreExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _repository.Update(StoreFromRepo);
+
+            _repository.SaveChanges();
+
 
             return NoContent();
         }
 
-        // POST: api/Store
+        // POST: api/Stores
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Store>> PostStore(Store store)
+        public IActionResult PostStore(StoreCreateDto StoreCreateDto)
         {
-            _context.Store.Add(store);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (StoreExists(store.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            Store StoreModel = _mapper.Map<Store>(StoreCreateDto);
 
-            return CreatedAtAction("GetStore", new { id = store.Id }, store);
+            _repository.Add(StoreModel);
+            _repository.SaveChanges();
+
+            StoreReadDto StoreReadDto = _mapper.Map<StoreReadDto>(StoreModel);
+
+            return CreatedAtAction("GetStore", new { id = StoreReadDto.Id }, StoreCreateDto);
+
         }
 
-        // DELETE: api/Store/5
+        // DELETE: api/Stores/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Store>> DeleteStore(int id)
+        public IActionResult DeleteStore(int id)
         {
-            Store store = await _context.Store.FindAsync(id);
-            if (store == null)
+            Store StoreFromRepo = _repository.Get(x => x.Id == id);
+
+            if (StoreFromRepo == null)
             {
                 return NotFound();
             }
 
-            _context.Store.Remove(store);
-            await _context.SaveChangesAsync();
+            _repository.Delete(StoreFromRepo);
 
-            return store;
+            _repository.SaveChanges();
+
+            return NoContent();
         }
 
-        private bool StoreExists(int id)
+        //Patch
+        [HttpPatch("{id}")]
+        public IActionResult PatchStore(int id, JsonPatchDocument<StoreUpdateDto> patchDoc)
         {
-            return _context.Store.Any(e => e.Id == id);
+            var StoreModelFromRepo = _repository.Get(x => x.Id == id);
+
+            if (StoreModelFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            var StoreToPatch = _mapper.Map<StoreUpdateDto>(StoreModelFromRepo);
+
+            patchDoc.ApplyTo(StoreToPatch, ModelState);
+
+            if (!TryValidateModel(StoreToPatch))
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            //Update the DTO to repo
+            _mapper.Map(StoreToPatch, StoreModelFromRepo);
+
+            //Temp is not doing nothing
+            _repository.Update(StoreModelFromRepo);
+
+            _repository.SaveChanges();
+
+            return NoContent();
         }
     }
 }

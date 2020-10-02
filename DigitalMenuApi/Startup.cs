@@ -70,6 +70,8 @@ namespace DigitalMenuApi
             {
                 c.SwaggerDoc("v" + apiVersion, new OpenApiInfo { Title = "Digital Menu Api", Version = "v" + apiVersion });
             });
+
+            services.AddRouting(option => option.LowercaseUrls = true);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
