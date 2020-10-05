@@ -11,6 +11,14 @@ namespace DigitalMenuApi.Data
     {
         public void Configure(EntityTypeBuilder<Account> entity)
         {
+            entity.HasIndex(e => e.RoleId);
+
+            entity.HasIndex(e => e.StoreId);
+
+            entity.Property(e => e.IsAvailable)
+                .IsRequired()
+                .HasDefaultValueSql("((1))");
+
             entity.Property(e => e.Token)
                 .IsRequired()
                 .IsUnicode(false);

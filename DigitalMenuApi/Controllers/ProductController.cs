@@ -25,7 +25,7 @@ namespace DigitalMenuApi.Controllers
         [HttpGet]
         public IActionResult GetProduct()
         {
-            IEnumerable<Product> Products = _repository.GetAll(x => x.Store);
+            IEnumerable<Product> Products = _repository.GetAll(predicate: x => x.IsAvailable == true, x => x.Store);
             return Ok(_mapper.Map<IEnumerable<ProductReadDto>>(Products));
             //return Ok(Products);
         }
@@ -35,7 +35,8 @@ namespace DigitalMenuApi.Controllers
         [HttpGet("{id}")]
         public ActionResult<ProductReadDto> GetProduct(int id)
         {
-            Product Product = _repository.Get(x => x.Id == id, x => x.Store);
+            Product Product = _repository.Get(predicate: x => x.Id == id && x.IsAvailable == true,
+                                              including: x => x.Store);
 
             if (Product == null)
             {

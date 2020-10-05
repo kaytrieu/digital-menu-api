@@ -25,7 +25,7 @@ namespace DigitalMenuApi.Controllers
         [HttpGet]
         public IActionResult GetScreenTemplate()
         {
-            IEnumerable<ScreenTemplate> ScreenTemplates = _repository.GetAll();
+            IEnumerable<ScreenTemplate> ScreenTemplates = _repository.GetAll(x => x.IsAvailable == true);
             return Ok(_mapper.Map<IEnumerable<ScreenTemplateReadDto>>(ScreenTemplates));
             //return Ok(ScreenTemplates);
         }
@@ -35,7 +35,7 @@ namespace DigitalMenuApi.Controllers
         [HttpGet("{id}")]
         public ActionResult<ScreenTemplateReadDto> GetScreenTemplate(int id)
         {
-            ScreenTemplate ScreenTemplate = _repository.Get(x => x.Id == id);
+            ScreenTemplate ScreenTemplate = _repository.Get(x => x.Id == id && x.IsAvailable == true);
 
             if (ScreenTemplate == null)
             {

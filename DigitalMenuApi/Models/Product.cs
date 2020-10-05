@@ -17,6 +17,7 @@ namespace DigitalMenuApi.Models
         public string Price { get; set; }
         public string Src { get; set; }
         public int? StoreId { get; set; }
+        public bool? IsAvailable { get; set; }
 
         public virtual Store Store { get; set; }
         public virtual ICollection<ProductListProduct> ProductListProduct { get; set; }

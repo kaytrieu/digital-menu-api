@@ -11,6 +11,14 @@ namespace DigitalMenuApi.Data
     {
         public void Configure(EntityTypeBuilder<ProductListProduct> entity)
         {
+            entity.HasIndex(e => e.ProductId);
+
+            entity.HasIndex(e => e.ProductListId);
+
+            entity.Property(e => e.IsAvailable)
+                .IsRequired()
+                .HasDefaultValueSql("((1))");
+
             entity.HasOne(d => d.Product)
                 .WithMany(p => p.ProductListProduct)
                 .HasForeignKey(d => d.ProductId)

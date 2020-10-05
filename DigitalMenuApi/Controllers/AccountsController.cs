@@ -25,7 +25,7 @@ namespace DigitalMenuApi.Controllers
         [HttpGet]
         public IActionResult GetAccount()
         {
-            IEnumerable<Account> accounts = _repository.GetAll(x => x.Role, x => x.Store);
+            IEnumerable<Account> accounts = _repository.GetAll(x => x.IsAvailable == true,x => x.Role, x => x.Store);
             return Ok(_mapper.Map<IEnumerable<AccountReadDto>>(accounts));
             //return Ok(accounts);
         }
@@ -35,7 +35,7 @@ namespace DigitalMenuApi.Controllers
         [HttpGet("{id}")]
         public ActionResult<AccountReadDto> GetAccount(int id)
         {
-            Account account = _repository.Get(x => x.Id == id, x => x.Role, x => x.Store);
+            Account account = _repository.Get(x => x.Id == id && x.IsAvailable == true, x => x.Role, x => x.Store);
 
             if (account == null)
             {

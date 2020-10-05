@@ -21,6 +21,7 @@ namespace DigitalMenuApi.Models
         public string FooterTitle { get; set; }
         public string HeaderSrc { get; set; }
         public string FooterSrc { get; set; }
+        public bool? IsAvailable { get; set; }
 
         public virtual BoxType BoxType { get; set; }
         public virtual Template Template { get; set; }
