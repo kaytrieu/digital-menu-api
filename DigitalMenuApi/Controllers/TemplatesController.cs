@@ -1,5 +1,5 @@
 using AutoMapper;
-using DigitalMenuApi.Dtos.ProductListDtos;
+using DigitalMenuApi.Dtos.TemplateDtos;
 using DigitalMenuApi.Models;
 using DigitalMenuApi.Repository;
 using Microsoft.AspNetCore.JsonPatch;
@@ -12,54 +12,54 @@ namespace DigitalMenuApi.Controllers
     [ApiController]
     public class TemplatesController : ControllerBase
     {
-        private readonly IProductListRepository _repository;
+        private readonly ITemplateRepository _repository;
         private readonly IMapper _mapper;
 
-        public TemplatesController(IProductListRepository repository, IMapper mapper)
+        public TemplatesController(ITemplateRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
-        // GET: api/ProductLists
+        // GET: api/Templates
         [HttpGet]
-        public IActionResult GetProductList()
+        public ActionResult<IEnumerable<TemplateReadDto>> GetTemplate()
         {
-            IEnumerable<ProductList> ProductLists = _repository.GetAll();
-            return Ok(_mapper.Map<IEnumerable<ProductListReadDto>>(ProductLists));
-            //return Ok(ProductLists);
+            IEnumerable<Template> Templates = _repository.GetAll(x => x.IsAvailable == true);
+            return Ok(_mapper.Map<IEnumerable<TemplateReadDto>>(Templates));
+            //return Ok(Templates);
         }
 
 
-        // GET: api/ProductLists/5
+        // GET: api/Templates/5
         [HttpGet("{id}")]
-        public ActionResult<ProductListReadDto> GetProductList(int id)
+        public ActionResult<TemplateReadDto> GetTemplate(int id)
         {
-            ProductList ProductList = _repository.Get(x => x.Id == id);
+            Template Template = _repository.Get(x => x.Id == id && x.IsAvailable == true);
 
-            if (ProductList == null)
+            if (Template == null)
             {
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<ProductListReadDto>(ProductList));
+            return Ok(_mapper.Map<TemplateReadDto>(Template));
         }
 
-        // PUT: api/ProductLists/5
+        // PUT: api/Templates/5
         [HttpPut("{id}")]
-        public IActionResult PutProductList(int id, ProductListUpdateDto ProductListUpdateDto)
+        public IActionResult PutTemplate(int id, TemplateUpdateDto TemplateUpdateDto)
         {
-            ProductList ProductListFromRepo = _repository.Get(x => x.Id == id);
+            Template TemplateFromRepo = _repository.Get(x => x.Id == id);
 
-            if (ProductListFromRepo == null)
+            if (TemplateFromRepo == null)
             {
                 return NotFound();
             }
 
             //Mapper to Update
-            _mapper.Map(ProductListUpdateDto, ProductListFromRepo);
+            _mapper.Map(TemplateUpdateDto, TemplateFromRepo);
 
-            _repository.Update(ProductListFromRepo);
+            _repository.Update(TemplateFromRepo);
 
             _repository.SaveChanges();
 
@@ -67,35 +67,35 @@ namespace DigitalMenuApi.Controllers
             return NoContent();
         }
 
-        // POST: api/ProductLists
+        // POST: api/Templates
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public IActionResult PostProductList(ProductListCreateDto ProductListCreateDto)
+        public IActionResult PostTemplate(TemplateCreateDto TemplateCreateDto)
         {
-            ProductList ProductListModel = _mapper.Map<ProductList>(ProductListCreateDto);
+            Template TemplateModel = _mapper.Map<Template>(TemplateCreateDto);
 
-            _repository.Add(ProductListModel);
+            _repository.Add(TemplateModel);
             _repository.SaveChanges();
 
-            ProductListReadDto ProductListReadDto = _mapper.Map<ProductListReadDto>(ProductListModel);
+            TemplateReadDto TemplateReadDto = _mapper.Map<TemplateReadDto>(TemplateModel);
 
-            return CreatedAtAction("GetProductList", new { id = ProductListReadDto.Id }, ProductListCreateDto);
+            return CreatedAtAction("GetTemplate", new { id = TemplateReadDto.Id }, TemplateCreateDto);
 
         }
 
-        // DELETE: api/ProductLists/5
+        // DELETE: api/Templates/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteProductList(int id)
+        public IActionResult DeleteTemplate(int id)
         {
-            ProductList ProductListFromRepo = _repository.Get(x => x.Id == id);
+            Template TemplateFromRepo = _repository.Get(x => x.Id == id);
 
-            if (ProductListFromRepo == null)
+            if (TemplateFromRepo == null)
             {
                 return NotFound();
             }
 
-            _repository.Delete(ProductListFromRepo);
+            _repository.Delete(TemplateFromRepo);
 
             _repository.SaveChanges();
 
@@ -104,29 +104,29 @@ namespace DigitalMenuApi.Controllers
 
         //Patch
         [HttpPatch("{id}")]
-        public IActionResult PatchProductList(int id, JsonPatchDocument<ProductListUpdateDto> patchDoc)
+        public IActionResult PatchTemplate(int id, JsonPatchDocument<TemplateUpdateDto> patchDoc)
         {
-            var ProductListModelFromRepo = _repository.Get(x => x.Id == id);
+            var TemplateModelFromRepo = _repository.Get(x => x.Id == id);
 
-            if (ProductListModelFromRepo == null)
+            if (TemplateModelFromRepo == null)
             {
                 return NotFound();
             }
 
-            var ProductListToPatch = _mapper.Map<ProductListUpdateDto>(ProductListModelFromRepo);
+            var TemplateToPatch = _mapper.Map<TemplateUpdateDto>(TemplateModelFromRepo);
 
-            patchDoc.ApplyTo(ProductListToPatch, ModelState);
+            patchDoc.ApplyTo(TemplateToPatch, ModelState);
 
-            if (!TryValidateModel(ProductListToPatch))
+            if (!TryValidateModel(TemplateToPatch))
             {
                 return ValidationProblem(ModelState);
             }
 
             //Update the DTO to repo
-            _mapper.Map(ProductListToPatch, ProductListModelFromRepo);
+            _mapper.Map(TemplateToPatch, TemplateModelFromRepo);
 
             //Temp is not doing nothing
-            _repository.Update(ProductListModelFromRepo);
+            _repository.Update(TemplateModelFromRepo);
 
             _repository.SaveChanges();
 
