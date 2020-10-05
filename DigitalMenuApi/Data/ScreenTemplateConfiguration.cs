@@ -11,7 +11,15 @@ namespace DigitalMenuApi.Data
     {
         public void Configure(EntityTypeBuilder<ScreenTemplate> entity)
         {
+            entity.HasIndex(e => e.ScreenId);
+
+            entity.HasIndex(e => e.TemplateId);
+
             entity.Property(e => e.Id).ValueGeneratedNever();
+
+            entity.Property(e => e.IsAvailable)
+                .IsRequired()
+                .HasDefaultValueSql("((1))");
 
             entity.Property(e => e.ScreenId).ValueGeneratedOnAdd();
 

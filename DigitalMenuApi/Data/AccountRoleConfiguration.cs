@@ -7,15 +7,13 @@ using System;
 
 namespace DigitalMenuApi.Data
 {
-    public class StoreConfiguration : IEntityTypeConfiguration<Store>
+    public class AccountRoleConfiguration : IEntityTypeConfiguration<AccountRole>
     {
-        public void Configure(EntityTypeBuilder<Store> entity)
+        public void Configure(EntityTypeBuilder<AccountRole> entity)
         {
             entity.Property(e => e.IsAvailable)
                 .IsRequired()
                 .HasDefaultValueSql("((1))");
-
-            entity.Property(e => e.Name).IsRequired();
         }
     }
 }

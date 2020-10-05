@@ -13,6 +13,10 @@ namespace DigitalMenuApi.Data
         {
             entity.Property(e => e.Description).IsUnicode(false);
 
+            entity.Property(e => e.IsAvailable)
+                .IsRequired()
+                .HasDefaultValueSql("((1))");
+
             entity.Property(e => e.Name).IsUnicode(false);
         }
     }

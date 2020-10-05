@@ -25,7 +25,7 @@ namespace DigitalMenuApi.Controllers
         [HttpGet]
         public IActionResult GetBox()
         {
-            IEnumerable<Box> Boxs = _repository.GetAll();
+            IEnumerable<Box> Boxs = _repository.GetAll(x => x.IsAvailable == true);
             return Ok(_mapper.Map<IEnumerable<BoxReadDto>>(Boxs));
             //return Ok(Boxs);
         }
@@ -35,7 +35,7 @@ namespace DigitalMenuApi.Controllers
         [HttpGet("{id}")]
         public ActionResult<BoxReadDto> GetBox(int id)
         {
-            Box Box = _repository.Get(x => x.Id == id);
+            Box Box = _repository.Get(x => x.Id == id && x.IsAvailable == true);
 
             if (Box == null)
             {
