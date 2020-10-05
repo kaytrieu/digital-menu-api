@@ -11,6 +11,14 @@ namespace DigitalMenuApi.Data
     {
         public void Configure(EntityTypeBuilder<Box> entity)
         {
+            entity.HasIndex(e => e.BoxTypeId);
+
+            entity.HasIndex(e => e.TemplateId);
+
+            entity.Property(e => e.IsAvailable)
+                .IsRequired()
+                .HasDefaultValueSql("((1))");
+
             entity.HasOne(d => d.BoxType)
                 .WithMany(p => p.Box)
                 .HasForeignKey(d => d.BoxTypeId)

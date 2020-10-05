@@ -25,7 +25,7 @@ namespace DigitalMenuApi.Controllers
         [HttpGet]
         public IActionResult GetScreen()
         {
-            IEnumerable<Screen> Screens = _repository.GetAll();
+            IEnumerable<Screen> Screens = _repository.GetAll(x => x.IsAvailable == true);
             return Ok(_mapper.Map<IEnumerable<ScreenReadDto>>(Screens));
             //return Ok(Screens);
         }
@@ -35,7 +35,7 @@ namespace DigitalMenuApi.Controllers
         [HttpGet("{id}")]
         public ActionResult<ScreenReadDto> GetScreen(int id)
         {
-            Screen Screen = _repository.Get(x => x.Id == id);
+            Screen Screen = _repository.Get(x => x.Id == id && x.IsAvailable == true);
 
             if (Screen == null)
             {

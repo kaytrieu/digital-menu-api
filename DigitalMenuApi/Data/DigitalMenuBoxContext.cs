@@ -32,6 +32,7 @@ namespace DigitalMenuApi.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new AccountConfiguration());
+            modelBuilder.ApplyConfiguration(new AccountRoleConfiguration());
             modelBuilder.ApplyConfiguration(new BoxConfiguration());
             modelBuilder.ApplyConfiguration(new BoxTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ProductConfiguration());

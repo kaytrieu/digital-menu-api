@@ -11,6 +11,8 @@ namespace DigitalMenuApi.Data
     {
         public void Configure(EntityTypeBuilder<Template> entity)
         {
+            entity.HasIndex(e => e.StoreId);
+
             entity.Property(e => e.CreatedTime).HasColumnType("datetime");
 
             entity.Property(e => e.Description).IsRequired();
