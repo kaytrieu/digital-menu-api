@@ -3,7 +3,7 @@
     public class AccountReadDto
     {
         public int Id { get; set; }
-        public string Token { get; set; }
+        public string Username { get; set; }
         public string StoreName { get; set; }
         public string RoleName { get; set; }
 

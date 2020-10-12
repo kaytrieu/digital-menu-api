@@ -19,7 +19,9 @@ namespace DigitalMenuApi.Data
                 .IsRequired()
                 .HasDefaultValueSql("((1))");
 
-            entity.Property(e => e.Token)
+            entity.Property(e => e.Password).IsUnicode(false);
+
+            entity.Property(e => e.Username)
                 .IsRequired()
                 .IsUnicode(false);
 

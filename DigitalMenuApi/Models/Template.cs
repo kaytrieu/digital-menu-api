@@ -16,9 +16,11 @@ namespace DigitalMenuApi.Models
         public string Description { get; set; }
         public int? StoreId { get; set; }
         public DateTime CreatedTime { get; set; }
-        public bool IsAvailable { get; set; }
+        public bool? IsAvailable { get; set; }
         public string Uilink { get; set; }
         public string Name { get; set; }
+        public DateTime? LastModified { get; set; }
+        public string Tags { get; set; }
 
         public virtual Store Store { get; set; }
         public virtual ICollection<Box> Box { get; set; }

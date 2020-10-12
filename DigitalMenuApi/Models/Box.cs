@@ -13,7 +13,6 @@ namespace DigitalMenuApi.Models
 
         public int Id { get; set; }
         public int TemplateId { get; set; }
-        public int? TypeId { get; set; }
         public int? Location { get; set; }
         public int? BoxTypeId { get; set; }
         public string Src { get; set; }

@@ -8,7 +8,6 @@ namespace DigitalMenuApi.Dtos.BoxDtos
     public class BoxCreateDto
     {
         public int TemplateId { get; set; }
-        public int? TypeId { get; set; }
         public int? Location { get; set; }
         public int? BoxTypeId { get; set; }
         public string Src { get; set; }

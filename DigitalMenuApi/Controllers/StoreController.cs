@@ -1,4 +1,5 @@
 using AutoMapper;
+using DigitalMenuApi.Dtos.ProductDtos;
 using DigitalMenuApi.Dtos.StoreDtos;
 using DigitalMenuApi.Models;
 using DigitalMenuApi.Repository;
@@ -13,12 +14,14 @@ namespace DigitalMenuApi.Controllers
     public class StoresController : ControllerBase
     {
         private readonly IStoreRepository _repository;
+        private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
 
-        public StoresController(IStoreRepository repository, IMapper mapper)
+        public StoresController(IStoreRepository repository, IMapper mapper, IProductRepository productRepository)
         {
             _repository = repository;
             _mapper = mapper;
+            _productRepository = productRepository;
         }
 
         // GET: api/Stores
@@ -43,6 +46,16 @@ namespace DigitalMenuApi.Controllers
             }
 
             return Ok(_mapper.Map<StoreReadDto>(Store));
+        }
+
+        // GET: api/Stores/5/Product
+        [HttpGet("{id}/Products")]
+        public IActionResult GetAllProductOfStore(int id)
+        {
+            IEnumerable<Product> Products = _productRepository.GetAll(
+                predicate: x => x.IsAvailable == true && x.StoreId == id, 
+                including: x => x.Store);
+            return Ok(_mapper.Map<IEnumerable<ProductReadDto>>(Products));
         }
 
         // PUT: api/Stores/5

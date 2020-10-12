@@ -1,5 +1,6 @@
 ﻿using DigitalMenuApi.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using ModelsFeedbackSystem.Repository;
 using System;
 using System.Linq;
@@ -10,8 +11,8 @@ namespace ModelsFeedbackSystem.GenericRepository
 {
     public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class
     {
-        private readonly DbContext _dbContext;
-        private readonly DbSet<TEntity> _dbSet;
+        public readonly DbContext _dbContext;
+        public readonly DbSet<TEntity> _dbSet;
 
 
         public BaseRepository(DigitalMenuBoxContext dbContext) // 
@@ -85,6 +86,15 @@ namespace ModelsFeedbackSystem.GenericRepository
                         query = query.Include(include);
                 });
             return query.Where(predicate);
+        }
+
+        public TEntity Get(Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> includer = null)
+        {
+            IQueryable<TEntity> query = _dbSet.AsQueryable();
+            if (includer != null)
+                query = includer(query);
+
+            return query.Where(predicate).FirstOrDefault<TEntity>();
         }
     }
 }

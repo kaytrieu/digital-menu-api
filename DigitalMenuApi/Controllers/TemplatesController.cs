@@ -4,6 +4,7 @@ using DigitalMenuApi.Models;
 using DigitalMenuApi.Repository;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
 namespace DigitalMenuApi.Controllers
@@ -21,28 +22,46 @@ namespace DigitalMenuApi.Controllers
             _mapper = mapper;
         }
 
+        //// GET: api/Templates
+        //[HttpGet]
+        //public ActionResult<IEnumerable<TemplateReadDto>> GetTemplate()
+        //{
+        //    IEnumerable<Template> Templates = _repository.GetAll(x => x.IsAvailable == true);
+        //    return Ok(_mapper.Map<IEnumerable<TemplateReadDto>>(Templates));
+        //    //return Ok(Templates);
+        //}
+
         // GET: api/Templates
         [HttpGet]
-        public ActionResult<IEnumerable<TemplateReadDto>> GetTemplate()
+        public ActionResult<IEnumerable<TemplateReadDto>> GetTemplate(string tag = "")
         {
-            IEnumerable<Template> Templates = _repository.GetAll(x => x.IsAvailable == true);
+            IEnumerable<Template> Templates = _repository.GetAll(x => x.IsAvailable == true
+                                                                      && x.Tags.ToLower().Contains(tag.ToLower()));
             return Ok(_mapper.Map<IEnumerable<TemplateReadDto>>(Templates));
             //return Ok(Templates);
         }
 
-
         // GET: api/Templates/5
         [HttpGet("{id}")]
-        public ActionResult<TemplateReadDto> GetTemplate(int id)
+        public ActionResult<TemplateReadDto> GetDetailTemplate(int id)
         {
-            Template Template = _repository.Get(x => x.Id == id && x.IsAvailable == true);
+            Template templateFromRepo = _repository.Get(x => x.Id == id && x.IsAvailable == true,
+                template => template
+                .Include(template => template.Box)
+                    .ThenInclude(box => box.ProductList)
+                        .ThenInclude(productList => productList.ProductListProduct)
+                            .ThenInclude(productListProduct => productListProduct.Product)
+                .Include(template => template.Box)
+                    .ThenInclude(box => box.BoxType));
 
-            if (Template == null)
+            if (templateFromRepo == null)
             {
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<TemplateReadDto>(Template));
+            TemplateDetailReadDto dto = _mapper.Map<TemplateDetailReadDto>(templateFromRepo);
+
+            return Ok(dto);
         }
 
         // PUT: api/Templates/5
@@ -78,9 +97,9 @@ namespace DigitalMenuApi.Controllers
             _repository.Add(TemplateModel);
             _repository.SaveChanges();
 
-            TemplateReadDto TemplateReadDto = _mapper.Map<TemplateReadDto>(TemplateModel);
+            //TemplateReadDto TemplateReadDto = _mapper.Map<TemplateReadDto>(TemplateModel);
 
-            return CreatedAtAction("GetTemplate", new { id = TemplateReadDto.Id }, TemplateCreateDto);
+            return CreatedAtAction("GetTemplate", new { id = TemplateModel.Id }, TemplateCreateDto);
 
         }
 

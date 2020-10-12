@@ -10,6 +10,7 @@ namespace DigitalMenuApi.Profiles
         {
             //Source to Target
             CreateMap<Template, TemplateReadDto>();
+            CreateMap<Template, TemplateDetailReadDto>().ForMember(dest => dest.Boxes, opt => opt.MapFrom(src => src.Box));
             CreateMap<TemplateUpdateDto, Template>();
             CreateMap<Template, TemplateUpdateDto>();
             CreateMap<TemplateCreateDto, Template>();

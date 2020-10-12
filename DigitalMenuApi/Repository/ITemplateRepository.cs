@@ -5,6 +5,6 @@ namespace DigitalMenuApi.Repository
 {
     public interface ITemplateRepository : IBaseRepository<Template>
     {
-
+        
     }
 }
