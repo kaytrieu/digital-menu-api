@@ -74,13 +74,15 @@ namespace DigitalMenuApi
             services.AddRouting(option => option.LowercaseUrls = true);
 
             //cross platform
-            services.AddCors(option =>
-            {
-                option.AddPolicy("DigitalMenuSystemPolicy",
-                    builder => builder.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader());
-            });
+            //services.AddCors(option =>
+            //{
+            //    option.AddPolicy("DigitalMenuSystemPolicy",
+            //        builder => builder.AllowAnyOrigin()
+            //        .AllowAnyMethod()
+            //        .AllowAnyHeader());
+            //});
+
+            services.AddCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -88,8 +90,10 @@ namespace DigitalMenuApi
         {
             int apiVersion = Configuration.GetValue<int>("Version");
 
-            app.UseCors();
-
+            //app.UseCors();
+            app.UseCors(
+               options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials()
+           );
 
             if (env.IsDevelopment())
             {
