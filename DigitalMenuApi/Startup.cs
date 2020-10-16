@@ -72,12 +72,23 @@ namespace DigitalMenuApi
             });
 
             services.AddRouting(option => option.LowercaseUrls = true);
+
+            //cross platform
+            services.AddCors(option =>
+            {
+                option.AddPolicy("DigitalMenuSystemPolicy",
+                    builder => builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             int apiVersion = Configuration.GetValue<int>("Version");
+
+            app.UseCors();
 
 
             if (env.IsDevelopment())
@@ -105,6 +116,8 @@ namespace DigitalMenuApi
             {
                 endpoints.MapControllers();
             });
+
+
         }
     }
 }
