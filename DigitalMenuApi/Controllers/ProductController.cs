@@ -2,9 +2,11 @@ using AutoMapper;
 using DigitalMenuApi.Dtos.ProductDtos;
 using DigitalMenuApi.Models;
 using DigitalMenuApi.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DigitalMenuApi.Controllers
 {
@@ -23,10 +25,11 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Products
         [HttpGet]
-        public IActionResult GetProduct()
+        public IActionResult GetProduct(int page, int limit)
         {
-            IEnumerable<Product> Products = _repository.GetAll(predicate: x => x.IsAvailable == true, x => x.Store);
-            return Ok(_mapper.Map<IEnumerable<ProductReadDto>>(Products));
+            IEnumerable<Product> products = _repository.GetAll(page, limit, predicate: x => x.IsAvailable == true, x => x.Store);
+
+            return Ok(_mapper.Map<IEnumerable<ProductReadDto>>(products));
             //return Ok(Products);
         }
 

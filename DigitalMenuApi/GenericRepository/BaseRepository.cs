@@ -1,4 +1,5 @@
 ﻿using DigitalMenuApi.Data;
+using DigitalMenuApi.Models.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using ModelsFeedbackSystem.Repository;
@@ -39,13 +40,15 @@ namespace ModelsFeedbackSystem.GenericRepository
 
         public TEntity Get(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including)
         {
+            return DbSetIncluding(including).Where(predicate).FirstOrDefault<TEntity>();
+        }
+
+        public TEntity Get(Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> includer = null)
+        {
             IQueryable<TEntity> query = _dbSet.AsQueryable();
-            if (including != null)
-                including.ToList().ForEach(include =>
-                {
-                    if (include != null)
-                        query = query.Include(include);
-                });
+            if (includer != null)
+                query = includer(query);
+
             return query.Where(predicate).FirstOrDefault<TEntity>();
         }
 
@@ -66,35 +69,36 @@ namespace ModelsFeedbackSystem.GenericRepository
 
         public IQueryable<TEntity> GetAll(params Expression<Func<TEntity, object>>[] including)
         {
-            IQueryable<TEntity> query = _dbSet.AsQueryable();
-            if (including != null)
-                including.ToList().ForEach(include =>
-                {
-                    if (include != null)
-                        query = query.Include(include);
-                });
-            return query;
+            return DbSetIncluding(including);
         }
 
         public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including)
         {
+            return DbSetIncluding(including).Where(predicate);
+        }
+
+        public IQueryable<TEntity> GetAll(int page, int limit, Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including)
+        {
+            return DbSetIncluding(including).Where(predicate).Paging<TEntity>(page, limit);
+        }
+
+        public IQueryable<TEntity> GetAll(int page, int limit, params Expression<Func<TEntity, object>>[] including)
+        {
+            return DbSetIncluding(including).Paging<TEntity>(page, limit);
+        }
+
+        private IQueryable<TEntity> DbSetIncluding(Expression<Func<TEntity, object>>[] including)
+        {
             IQueryable<TEntity> query = _dbSet.AsQueryable();
+            
             if (including != null)
                 including.ToList().ForEach(include =>
                 {
                     if (include != null)
                         query = query.Include(include);
                 });
-            return query.Where(predicate);
-        }
 
-        public TEntity Get(Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> includer = null)
-        {
-            IQueryable<TEntity> query = _dbSet.AsQueryable();
-            if (includer != null)
-                query = includer(query);
-
-            return query.Where(predicate).FirstOrDefault<TEntity>();
+            return query;
         }
     }
 }
