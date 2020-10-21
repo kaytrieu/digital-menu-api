@@ -23,9 +23,9 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/ProductListProducts
         [HttpGet]
-        public IActionResult GetProductListProduct()
+        public IActionResult GetProductListProduct(int page, int limit)
         {
-            IEnumerable<ProductListProduct> ProductListProducts = _repository.GetAll(x => x.IsAvailable == true);
+            IEnumerable<ProductListProduct> ProductListProducts = _repository.GetAll(page, limit, x => x.IsAvailable == true);
             return Ok(_mapper.Map<IEnumerable<ProductListProductReadDto>>(ProductListProducts));
             //return Ok(ProductListProducts);
         }

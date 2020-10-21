@@ -10,7 +10,9 @@ namespace ModelsFeedbackSystem.Repository
     {
 
         IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including);
+        IQueryable<TEntity> GetAll(int page, int limit, Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including);
         IQueryable<TEntity> GetAll(params Expression<Func<TEntity, object>>[] including);
+        IQueryable<TEntity> GetAll(int page, int limit, params Expression<Func<TEntity, object>>[] including);
         TEntity Get(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including);
         TEntity Get(Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> includer = null);
         void Add(TEntity t);

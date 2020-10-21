@@ -26,9 +26,9 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Stores
         [HttpGet]
-        public IActionResult GetStore()
+        public IActionResult GetStore(int page, int limit)
         {
-            IEnumerable<Store> Stores = _repository.GetAll(x => x.IsAvailable == true);
+            IEnumerable<Store> Stores = _repository.GetAll(page, limit, x => x.IsAvailable == true);
             return Ok(_mapper.Map<IEnumerable<StoreReadDto>>(Stores));
             //return Ok(Stores);
         }

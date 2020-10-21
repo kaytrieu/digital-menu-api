@@ -23,9 +23,9 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/AccountRoles
         [HttpGet]
-        public IActionResult GetAccountRole()
+        public IActionResult GetAccountRole(int page, int limit)
         {
-            IEnumerable<AccountRole> AccountRoles = _repository.GetAll(x => x.IsAvailable == true);
+            IEnumerable<AccountRole> AccountRoles = _repository.GetAll(page, limit, x => x.IsAvailable == true);
             return Ok(_mapper.Map<IEnumerable<AccountRoleReadDto>>(AccountRoles));
             //return Ok(AccountRoles);
         }

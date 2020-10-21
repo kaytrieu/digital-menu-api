@@ -23,9 +23,9 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Screens
         [HttpGet]
-        public IActionResult GetScreen()
+        public IActionResult GetScreen(int page, int limit)
         {
-            IEnumerable<Screen> Screens = _repository.GetAll(x => x.IsAvailable == true);
+            IEnumerable<Screen> Screens = _repository.GetAll(page, limit, x => x.IsAvailable == true);
             return Ok(_mapper.Map<IEnumerable<ScreenReadDto>>(Screens));
             //return Ok(Screens);
         }

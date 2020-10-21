@@ -23,9 +23,9 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/BoxTypes
         [HttpGet]
-        public IActionResult GetBoxType()
+        public IActionResult GetBoxType(int page, int limit)
         {
-            IEnumerable<BoxType> BoxTypes = _repository.GetAll(x => x.IsAvailable == true);
+            IEnumerable<BoxType> BoxTypes = _repository.GetAll(page, limit, x => x.IsAvailable == true);
             return Ok(_mapper.Map<IEnumerable<BoxTypeReadDto>>(BoxTypes));
             //return Ok(BoxTypes);
         }

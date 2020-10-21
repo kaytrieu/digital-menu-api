@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DigitalMenuApi.Controllers
 {
@@ -24,20 +25,24 @@ namespace DigitalMenuApi.Controllers
 
         //// GET: api/Templates
         //[HttpGet]
-        //public ActionResult<IEnumerable<TemplateReadDto>> GetTemplate()
+        //public ActionResult<IEnumerable<TemplateReadDto>> GetTemplate(int page, int limit)
         //{
-        //    IEnumerable<Template> Templates = _repository.GetAll(x => x.IsAvailable == true);
+        //    IEnumerable<Template> Templates = _repository.GetAll(page, limit, x => x.IsAvailable == true);
         //    return Ok(_mapper.Map<IEnumerable<TemplateReadDto>>(Templates));
         //    //return Ok(Templates);
         //}
 
         // GET: api/Templates
         [HttpGet]
-        public ActionResult<IEnumerable<TemplateReadDto>> GetTemplate(string tag = "")
+        public ActionResult<IEnumerable<TemplateReadDto>> GetTemplate(int page, int limit, string tag = "", string searchValue = "")
         {
-            IEnumerable<Template> Templates = _repository.GetAll(x => x.IsAvailable == true
-                                                                      && x.Tags.ToLower().Contains(tag.ToLower()));
-            return Ok(_mapper.Map<IEnumerable<TemplateReadDto>>(Templates));
+            IEnumerable<Template> templates = _repository.GetAll(page, limit, predicate: x => x.IsAvailable == true
+                                                                      && x.Tags.ToLower().Contains(tag.ToLower() )
+                                                                      && x.Name.ToLower().Contains(searchValue.ToLower()));
+
+            //templates = _repository.Paging(templates.AsQueryable<Template>(), page, limit);
+
+            return Ok(_mapper.Map<IEnumerable<TemplateReadDto>>(templates));
             //return Ok(Templates);
         }
 
