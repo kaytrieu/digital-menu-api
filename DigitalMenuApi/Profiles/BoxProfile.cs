@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
 using DigitalMenuApi.Dtos.BoxDtos;
-using DigitalMenuApi.Dtos.ProductListProductDtos;
 using DigitalMenuApi.Models;
-using Microsoft.VisualBasic;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace DigitalMenuApi.Profiles
 {

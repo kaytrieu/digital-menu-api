@@ -1,18 +1,15 @@
-﻿
-using System;
+﻿using DigitalMenuApi.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using DigitalMenuApi.Models;
 
 namespace DigitalMenuApi.Data
 {
-    public partial class DigitalMenuBoxContext : DbContext
+    public partial class DigitalMenuSystemContext : DbContext
     {
-        public DigitalMenuBoxContext()
+        public DigitalMenuSystemContext()
         {
         }
 
-        public DigitalMenuBoxContext(DbContextOptions<DigitalMenuBoxContext> options)
+        public DigitalMenuSystemContext(DbContextOptions<DigitalMenuSystemContext> options)
             : base(options)
         {
         }
@@ -21,6 +18,8 @@ namespace DigitalMenuApi.Data
         public virtual DbSet<AccountRole> AccountRole { get; set; }
         public virtual DbSet<Box> Box { get; set; }
         public virtual DbSet<BoxType> BoxType { get; set; }
+        public virtual DbSet<DesignBox> DesignBox { get; set; }
+        public virtual DbSet<Layout> Layout { get; set; }
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<ProductList> ProductList { get; set; }
         public virtual DbSet<ProductListProduct> ProductListProduct { get; set; }
@@ -35,6 +34,8 @@ namespace DigitalMenuApi.Data
             modelBuilder.ApplyConfiguration(new AccountRoleConfiguration());
             modelBuilder.ApplyConfiguration(new BoxConfiguration());
             modelBuilder.ApplyConfiguration(new BoxTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new DesignBoxConfiguration());
+            modelBuilder.ApplyConfiguration(new LayoutConfiguration());
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
             modelBuilder.ApplyConfiguration(new ProductListConfiguration());
             modelBuilder.ApplyConfiguration(new ProductListProductConfiguration());

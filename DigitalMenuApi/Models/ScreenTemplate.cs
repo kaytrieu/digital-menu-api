@@ -1,8 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-
-namespace DigitalMenuApi.Models
+﻿namespace DigitalMenuApi.Models
 {
     public partial class ScreenTemplate
     {

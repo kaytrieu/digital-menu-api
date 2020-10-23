@@ -13,7 +13,7 @@ namespace DigitalMenuApi.Profiles
             CreateMap<ProductList, ProductListReadDto>();
             CreateMap<ProductList, ProductListTemplateReadDto>()
                 .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.ProductListProduct.Select(x => x.Product).ToList()))
-                  .AfterMap((_, dest) 
+                  .AfterMap((_, dest)
                     => dest.Products.ToList().ForEach(
                         x => x.Location = _.ProductListProduct.
                                                 Where(y => y.ProductId == x.Id).

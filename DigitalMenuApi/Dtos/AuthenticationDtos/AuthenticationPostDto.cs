@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace DigitalMenuApi.Dtos.AccountDtos
+namespace DigitalMenuApi.Dtos.AuthenticationDtos
 {
-    public class AccountLoginDto
+    public class AuthenticationPostDto
     {
         [Required]
         public string Username { get; set; }

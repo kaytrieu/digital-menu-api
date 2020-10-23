@@ -1,7 +1,6 @@
 ﻿using DigitalMenuApi.Models;
-using ModelsFeedbackSystem.Repository;
 
-namespace DigitalMenuApi.Repository
+namespace DigitalMenuApi.GenericRepository
 {
     public interface IAccountRoleRepository : IBaseRepository<AccountRole>
     {

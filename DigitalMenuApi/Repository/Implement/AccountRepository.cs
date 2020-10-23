@@ -1,12 +1,11 @@
 ﻿using DigitalMenuApi.Data;
 using DigitalMenuApi.Models;
-using ModelsFeedbackSystem.GenericRepository;
 
-namespace DigitalMenuApi.Repository.Implement
+namespace DigitalMenuApi.GenericRepository.Implement
 {
     public class AccountRepository : BaseRepository<Account>, IAccountRepository
     {
-        public AccountRepository(DigitalMenuBoxContext dbContext) : base(dbContext)
+        public AccountRepository(DigitalMenuSystemContext dbContext) : base(dbContext)
         {
         }
 

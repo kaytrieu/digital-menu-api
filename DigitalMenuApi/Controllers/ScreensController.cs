@@ -1,7 +1,7 @@
 using AutoMapper;
 using DigitalMenuApi.Dtos.ScreenDtos;
+using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
-using DigitalMenuApi.Repository;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -106,14 +106,14 @@ namespace DigitalMenuApi.Controllers
         [HttpPatch("{id}")]
         public IActionResult PatchScreen(int id, JsonPatchDocument<ScreenUpdateDto> patchDoc)
         {
-            var ScreenModelFromRepo = _repository.Get(x => x.Id == id);
+            Screen ScreenModelFromRepo = _repository.Get(x => x.Id == id);
 
             if (ScreenModelFromRepo == null)
             {
                 return NotFound();
             }
 
-            var ScreenToPatch = _mapper.Map<ScreenUpdateDto>(ScreenModelFromRepo);
+            ScreenUpdateDto ScreenToPatch = _mapper.Map<ScreenUpdateDto>(ScreenModelFromRepo);
 
             patchDoc.ApplyTo(ScreenToPatch, ModelState);
 

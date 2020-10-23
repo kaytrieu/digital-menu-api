@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using DigitalMenuApi.Dtos.BoxDtos;
+using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
-using DigitalMenuApi.Repository;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -106,14 +106,14 @@ namespace DigitalMenuApi.Controllers
         [HttpPatch("{id}")]
         public IActionResult PatchBox(int id, JsonPatchDocument<BoxUpdateDto> patchDoc)
         {
-            var BoxModelFromRepo = _repository.Get(x => x.Id == id);
+            Box BoxModelFromRepo = _repository.Get(x => x.Id == id);
 
             if (BoxModelFromRepo == null)
             {
                 return NotFound();
             }
 
-            var BoxToPatch = _mapper.Map<BoxUpdateDto>(BoxModelFromRepo);
+            BoxUpdateDto BoxToPatch = _mapper.Map<BoxUpdateDto>(BoxModelFromRepo);
 
             patchDoc.ApplyTo(BoxToPatch, ModelState);
 

@@ -1,6 +1,5 @@
 ﻿using DigitalMenuApi.Dtos.BoxTypeDtos;
 using DigitalMenuApi.Dtos.ProductListDtos;
-using DigitalMenuApi.Dtos.ProductListProductDtos;
 using System.Collections.Generic;
 
 namespace DigitalMenuApi.Dtos.BoxDtos

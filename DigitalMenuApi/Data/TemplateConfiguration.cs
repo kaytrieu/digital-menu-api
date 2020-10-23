@@ -1,9 +1,7 @@
 ﻿
 using DigitalMenuApi.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore;
-using System;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DigitalMenuApi.Data
 {
@@ -28,6 +26,11 @@ namespace DigitalMenuApi.Data
             entity.Property(e => e.Uilink)
                 .HasColumnName("UILink")
                 .HasDefaultValueSql("('')");
+
+            entity.HasOne(d => d.Layout)
+                .WithMany(p => p.Template)
+                .HasForeignKey(d => d.LayoutId)
+                .HasConstraintName("FK_Template_Layout");
 
             entity.HasOne(d => d.Store)
                 .WithMany(p => p.Template)

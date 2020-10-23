@@ -1,7 +1,7 @@
 using AutoMapper;
 using DigitalMenuApi.Data;
-using DigitalMenuApi.Repository;
-using DigitalMenuApi.Repository.Implement;
+using DigitalMenuApi.GenericRepository;
+using DigitalMenuApi.GenericRepository.Implement;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -14,7 +14,6 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace DigitalMenuApi
@@ -55,7 +54,7 @@ namespace DigitalMenuApi
 
             int apiVersion = Configuration.GetValue<int>("Version");
             //services.AddTransient<DbContext, DigitalMenuBoxContext>();
-            services.AddDbContext<DigitalMenuBoxContext>(opt =>
+            services.AddDbContext<DigitalMenuSystemContext>(opt =>
             {
                 opt.UseSqlServer(Configuration.GetConnectionString("AzureDigitalMenuAPI"));
             });
@@ -74,7 +73,7 @@ namespace DigitalMenuApi
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             //Add DI for repository
-            services.AddScoped<DbContext, DigitalMenuBoxContext>();
+            services.AddScoped<DbContext, DigitalMenuSystemContext>();
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<IAccountRoleRepository, AccountRoleRepository>();
             services.AddScoped<IBoxRepository, BoxRepository>();

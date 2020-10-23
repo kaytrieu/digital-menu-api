@@ -1,8 +1,8 @@
 using AutoMapper;
 using DigitalMenuApi.Dtos.ProductDtos;
 using DigitalMenuApi.Dtos.StoreDtos;
+using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
-using DigitalMenuApi.Repository;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -50,10 +50,10 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Stores/5/Product
         [HttpGet("{id}/Products")]
-        public IActionResult GetAllProductOfStore(int id)
+        public IActionResult GetAllProductOfStore(int id, int page, int limit)
         {
-            IEnumerable<Product> Products = _productRepository.GetAll(
-                predicate: x => x.IsAvailable == true && x.StoreId == id, 
+            IEnumerable<Product> Products = _productRepository.GetAll(page, limit,
+                predicate: x => x.IsAvailable == true && x.StoreId == id,
                 including: x => x.Store);
             return Ok(_mapper.Map<IEnumerable<ProductReadDto>>(Products));
         }
@@ -119,14 +119,14 @@ namespace DigitalMenuApi.Controllers
         [HttpPatch("{id}")]
         public IActionResult PatchStore(int id, JsonPatchDocument<StoreUpdateDto> patchDoc)
         {
-            var StoreModelFromRepo = _repository.Get(x => x.Id == id);
+            Store StoreModelFromRepo = _repository.Get(x => x.Id == id);
 
             if (StoreModelFromRepo == null)
             {
                 return NotFound();
             }
 
-            var StoreToPatch = _mapper.Map<StoreUpdateDto>(StoreModelFromRepo);
+            StoreUpdateDto StoreToPatch = _mapper.Map<StoreUpdateDto>(StoreModelFromRepo);
 
             patchDoc.ApplyTo(StoreToPatch, ModelState);
 

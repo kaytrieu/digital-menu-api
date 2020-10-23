@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace ModelsFeedbackSystem.Repository
+namespace DigitalMenuApi.GenericRepository
 {
     public interface IBaseRepository<TEntity> where TEntity : class
     {

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using DigitalMenuApi.Dtos.AccountRoleDtos;
+using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
-using DigitalMenuApi.Repository;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -106,14 +106,14 @@ namespace DigitalMenuApi.Controllers
         [HttpPatch("{id}")]
         public IActionResult PatchAccountRole(int id, JsonPatchDocument<AccountRoleUpdateDto> patchDoc)
         {
-            var AccountRoleModelFromRepo = _repository.Get(x => x.Id == id);
+            AccountRole AccountRoleModelFromRepo = _repository.Get(x => x.Id == id);
 
             if (AccountRoleModelFromRepo == null)
             {
                 return NotFound();
             }
 
-            var AccountRoleToPatch = _mapper.Map<AccountRoleUpdateDto>(AccountRoleModelFromRepo);
+            AccountRoleUpdateDto AccountRoleToPatch = _mapper.Map<AccountRoleUpdateDto>(AccountRoleModelFromRepo);
 
             patchDoc.ApplyTo(AccountRoleToPatch, ModelState);
 

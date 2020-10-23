@@ -2,13 +2,12 @@
 using DigitalMenuApi.Models.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
-using ModelsFeedbackSystem.Repository;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace ModelsFeedbackSystem.GenericRepository
+namespace DigitalMenuApi.GenericRepository
 {
     public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class
     {
@@ -16,7 +15,7 @@ namespace ModelsFeedbackSystem.GenericRepository
         public readonly DbSet<TEntity> _dbSet;
 
 
-        public BaseRepository(DigitalMenuBoxContext dbContext) // 
+        public BaseRepository(DigitalMenuSystemContext dbContext) // 
         {
             _dbContext = dbContext;
             _dbSet = _dbContext.Set<TEntity>();
@@ -90,7 +89,7 @@ namespace ModelsFeedbackSystem.GenericRepository
         private IQueryable<TEntity> DbSetIncluding(Expression<Func<TEntity, object>>[] including)
         {
             IQueryable<TEntity> query = _dbSet.AsQueryable();
-            
+
             if (including != null)
                 including.ToList().ForEach(include =>
                 {

@@ -1,13 +1,11 @@
 using DigitalMenuApi.Data;
 using DigitalMenuApi.Models;
-using ModelsFeedbackSystem.GenericRepository;
-using ModelsFeedbackSystem.Repository;
 
-namespace DigitalMenuApi.Repository
+namespace DigitalMenuApi.GenericRepository
 {
     public class ScreenTemplateRepository : BaseRepository<ScreenTemplate>, IScreenTemplateRepository
     {
-        public ScreenTemplateRepository(DigitalMenuBoxContext dbContext) : base(dbContext)
+        public ScreenTemplateRepository(DigitalMenuSystemContext dbContext) : base(dbContext)
         {
         }
     }

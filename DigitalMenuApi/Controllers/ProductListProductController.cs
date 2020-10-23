@@ -1,7 +1,7 @@
 using AutoMapper;
 using DigitalMenuApi.Dtos.ProductListProductDtos;
+using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
-using DigitalMenuApi.Repository;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -106,14 +106,14 @@ namespace DigitalMenuApi.Controllers
         [HttpPatch("{id}")]
         public IActionResult PatchProductListProduct(int id, JsonPatchDocument<ProductListProductUpdateDto> patchDoc)
         {
-            var ProductListProductModelFromRepo = _repository.Get(x => x.Id == id);
+            ProductListProduct ProductListProductModelFromRepo = _repository.Get(x => x.Id == id);
 
             if (ProductListProductModelFromRepo == null)
             {
                 return NotFound();
             }
 
-            var ProductListProductToPatch = _mapper.Map<ProductListProductUpdateDto>(ProductListProductModelFromRepo);
+            ProductListProductUpdateDto ProductListProductToPatch = _mapper.Map<ProductListProductUpdateDto>(ProductListProductModelFromRepo);
 
             patchDoc.ApplyTo(ProductListProductToPatch, ModelState);
 

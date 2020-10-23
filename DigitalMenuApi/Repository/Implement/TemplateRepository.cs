@@ -1,14 +1,11 @@
 using DigitalMenuApi.Data;
 using DigitalMenuApi.Models;
-using ModelsFeedbackSystem.GenericRepository;
-using ModelsFeedbackSystem.Repository;
-using System.Linq;
 
-namespace DigitalMenuApi.Repository
+namespace DigitalMenuApi.GenericRepository
 {
     public class TemplateRepository : BaseRepository<Template>, ITemplateRepository
     {
-        public TemplateRepository(DigitalMenuBoxContext dbContext) : base(dbContext)
+        public TemplateRepository(DigitalMenuSystemContext dbContext) : base(dbContext)
         {
         }
     }

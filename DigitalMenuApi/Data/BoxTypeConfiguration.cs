@@ -1,9 +1,7 @@
 ﻿
 using DigitalMenuApi.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore;
-using System;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DigitalMenuApi.Data
 {

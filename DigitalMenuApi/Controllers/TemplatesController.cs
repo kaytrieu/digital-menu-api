@@ -1,12 +1,11 @@
 using AutoMapper;
 using DigitalMenuApi.Dtos.TemplateDtos;
+using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
-using DigitalMenuApi.Repository;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace DigitalMenuApi.Controllers
 {
@@ -37,7 +36,7 @@ namespace DigitalMenuApi.Controllers
         public ActionResult<IEnumerable<TemplateReadDto>> GetTemplate(int page, int limit, string tag = "", string searchValue = "")
         {
             IEnumerable<Template> templates = _repository.GetAll(page, limit, predicate: x => x.IsAvailable == true
-                                                                      && x.Tags.ToLower().Contains(tag.ToLower() )
+                                                                      && x.Tags.ToLower().Contains(tag.ToLower())
                                                                       && x.Name.ToLower().Contains(searchValue.ToLower()));
 
             //templates = _repository.Paging(templates.AsQueryable<Template>(), page, limit);
@@ -130,14 +129,14 @@ namespace DigitalMenuApi.Controllers
         [HttpPatch("{id}")]
         public IActionResult PatchTemplate(int id, JsonPatchDocument<TemplateUpdateDto> patchDoc)
         {
-            var TemplateModelFromRepo = _repository.Get(x => x.Id == id);
+            Template TemplateModelFromRepo = _repository.Get(x => x.Id == id);
 
             if (TemplateModelFromRepo == null)
             {
                 return NotFound();
             }
 
-            var TemplateToPatch = _mapper.Map<TemplateUpdateDto>(TemplateModelFromRepo);
+            TemplateUpdateDto TemplateToPatch = _mapper.Map<TemplateUpdateDto>(TemplateModelFromRepo);
 
             patchDoc.ApplyTo(TemplateToPatch, ModelState);
 
