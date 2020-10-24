@@ -91,7 +91,7 @@ namespace DigitalMenuApi.Controllers
         public IActionResult PostTemplate([FromForm]TemplatePostFormWrapper formWrapper)
         {
             var file = formWrapper.file;
-            TemplateCreateDto templateDto = JsonConvert.DeserializeObject<TemplateCreateDto>(formWrapper.templateDto);
+            TemplateCreateDto templateDto = JsonConvert.DeserializeObject<TemplateCreateDto>(formWrapper.templateDtoJson);
             if (file.Length > 0)
             {
                 string uploadedFileLink = FirebaseService.UploadFileToFirebaseStorage(file.OpenReadStream(), DateTime.Now.ToString("ddMMyyyyHHmmssff") + file.FileName).Result;
