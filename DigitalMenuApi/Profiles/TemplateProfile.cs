@@ -14,6 +14,7 @@ namespace DigitalMenuApi.Profiles
             CreateMap<TemplateUpdateDto, Template>();
             CreateMap<Template, TemplateUpdateDto>();
             CreateMap<TemplateCreateDto, Template>();
+            CreateMap<TemplateDetailReadDto, Template>();
         }
 
     }

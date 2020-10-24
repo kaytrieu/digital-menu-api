@@ -2,6 +2,8 @@ using AutoMapper;
 using DigitalMenuApi.Data;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.GenericRepository.Implement;
+using DigitalMenuApi.Service;
+using DigitalMenuApi.Service.Implement;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -85,6 +87,7 @@ namespace DigitalMenuApi
             services.AddScoped<IScreenTemplateRepository, ScreenTemplateRepository>();
             services.AddScoped<IStoreRepository, StoreRepository>();
             services.AddScoped<ITemplateRepository, TemplateRepository>();
+            services.AddScoped<ITemplateService, TemplateService>();
 
             //(Configuration.GetConnectionString("Digital_Menu_Box")));
 

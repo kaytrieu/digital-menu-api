@@ -15,6 +15,12 @@
 
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
 
+    <PackageReference Include="Firebase.Auth" Version="1.0.0" />
+
+    <PackageReference Include="FirebaseStorage.net" Version="1.0.3" />
+
+    <PackageReference Include="JsonModelBinder" Version="2.1.1" />
+
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.9" />
 
     <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="3.1.8" />
@@ -35,10 +41,6 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.2" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
   </ItemGroup>
 
 

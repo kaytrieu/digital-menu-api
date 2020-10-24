@@ -2,9 +2,14 @@ using AutoMapper;
 using DigitalMenuApi.Dtos.TemplateDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
+using DigitalMenuApi.Service;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 
 namespace DigitalMenuApi.Controllers
@@ -13,43 +18,34 @@ namespace DigitalMenuApi.Controllers
     [ApiController]
     public class TemplatesController : ControllerBase
     {
-        private readonly ITemplateRepository _repository;
+        private readonly ITemplateService _templateService;
+        private readonly ITemplateRepository _templateRepository;
         private readonly IMapper _mapper;
 
-        public TemplatesController(ITemplateRepository repository, IMapper mapper)
+        public TemplatesController(ITemplateRepository templateRepository, IMapper mapper, ITemplateService templateService)
         {
-            _repository = repository;
+            _templateService = templateService;
+
+            _templateRepository = templateRepository;
             _mapper = mapper;
         }
-
-        //// GET: api/Templates
-        //[HttpGet]
-        //public ActionResult<IEnumerable<TemplateReadDto>> GetTemplate(int page, int limit)
-        //{
-        //    IEnumerable<Template> Templates = _repository.GetAll(page, limit, x => x.IsAvailable == true);
-        //    return Ok(_mapper.Map<IEnumerable<TemplateReadDto>>(Templates));
-        //    //return Ok(Templates);
-        //}
 
         // GET: api/Templates
         [HttpGet]
         public ActionResult<IEnumerable<TemplateReadDto>> GetTemplate(int page, int limit, string tag = "", string searchValue = "")
         {
-            IEnumerable<Template> templates = _repository.GetAll(page, limit, predicate: x => x.IsAvailable == true
+            IEnumerable<Template> templates = _templateRepository.GetAll(page, limit, predicate: x => x.IsAvailable == true
                                                                       && x.Tags.ToLower().Contains(tag.ToLower())
                                                                       && x.Name.ToLower().Contains(searchValue.ToLower()));
 
-            //templates = _repository.Paging(templates.AsQueryable<Template>(), page, limit);
-
             return Ok(_mapper.Map<IEnumerable<TemplateReadDto>>(templates));
-            //return Ok(Templates);
         }
 
         // GET: api/Templates/5
         [HttpGet("{id}")]
-        public ActionResult<TemplateReadDto> GetDetailTemplate(int id)
+        public ActionResult<TemplateDetailReadDto> GetDetailTemplate(int id)
         {
-            Template templateFromRepo = _repository.Get(x => x.Id == id && x.IsAvailable == true,
+            Template templateFromRepo = _templateRepository.Get(x => x.Id == id && x.IsAvailable == true,
                 template => template
                 .Include(template => template.Box)
                     .ThenInclude(box => box.ProductList)
@@ -72,7 +68,7 @@ namespace DigitalMenuApi.Controllers
         [HttpPut("{id}")]
         public IActionResult PutTemplate(int id, TemplateUpdateDto TemplateUpdateDto)
         {
-            Template TemplateFromRepo = _repository.Get(x => x.Id == id);
+            Template TemplateFromRepo = _templateRepository.Get(x => x.Id == id);
 
             if (TemplateFromRepo == null)
             {
@@ -82,45 +78,55 @@ namespace DigitalMenuApi.Controllers
             //Mapper to Update
             _mapper.Map(TemplateUpdateDto, TemplateFromRepo);
 
-            _repository.Update(TemplateFromRepo);
+            _templateRepository.Update(TemplateFromRepo);
 
-            _repository.SaveChanges();
+            _templateRepository.SaveChanges();
 
 
             return NoContent();
         }
 
         // POST: api/Templates
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public IActionResult PostTemplate(TemplateCreateDto TemplateCreateDto)
+        public IActionResult PostTemplate([FromForm]TemplatePostFormWrapper formWrapper)
         {
-            Template TemplateModel = _mapper.Map<Template>(TemplateCreateDto);
+            var file = formWrapper.file;
+            TemplateCreateDto templateDto = JsonConvert.DeserializeObject<TemplateCreateDto>(formWrapper.templateDto);
+            if (file.Length > 0)
+            {
+                string uploadedFileLink = FirebaseService.UploadFileToFirebaseStorage(file.OpenReadStream(), DateTime.Now.ToString("ddMMyyyyHHmmssff") + file.FileName).Result;
 
-            _repository.Add(TemplateModel);
-            _repository.SaveChanges();
+                if (templateDto != null)
+                {
 
-            //TemplateReadDto TemplateReadDto = _mapper.Map<TemplateReadDto>(TemplateModel);
+                    Template createdTemplate = _templateService.CreateNewTemplate(templateDto, uploadedFileLink);
 
-            return CreatedAtAction("GetTemplate", new { id = TemplateModel.Id }, TemplateCreateDto);
 
+                    TemplateDetailReadDto TemplateReadDto = _mapper.Map<TemplateDetailReadDto>(createdTemplate);
+
+                    return CreatedAtAction("GetTemplate", new { id = createdTemplate.Id }, TemplateReadDto);
+                }
+
+                return BadRequest();
+            }
+
+            return BadRequest();
         }
 
         // DELETE: api/Templates/5
         [HttpDelete("{id}")]
         public IActionResult DeleteTemplate(int id)
         {
-            Template TemplateFromRepo = _repository.Get(x => x.Id == id);
+            Template TemplateFromRepo = _templateRepository.Get(x => x.Id == id);
 
             if (TemplateFromRepo == null)
             {
                 return NotFound();
             }
 
-            _repository.Delete(TemplateFromRepo);
+            _templateRepository.Delete(TemplateFromRepo);
 
-            _repository.SaveChanges();
+            _templateRepository.SaveChanges();
 
             return NoContent();
         }
@@ -129,7 +135,7 @@ namespace DigitalMenuApi.Controllers
         [HttpPatch("{id}")]
         public IActionResult PatchTemplate(int id, JsonPatchDocument<TemplateUpdateDto> patchDoc)
         {
-            Template TemplateModelFromRepo = _repository.Get(x => x.Id == id);
+            Template TemplateModelFromRepo = _templateRepository.Get(x => x.Id == id);
 
             if (TemplateModelFromRepo == null)
             {
@@ -149,9 +155,9 @@ namespace DigitalMenuApi.Controllers
             _mapper.Map(TemplateToPatch, TemplateModelFromRepo);
 
             //Temp is not doing nothing
-            _repository.Update(TemplateModelFromRepo);
+            _templateRepository.Update(TemplateModelFromRepo);
 
-            _repository.SaveChanges();
+            _templateRepository.SaveChanges();
 
             return NoContent();
         }

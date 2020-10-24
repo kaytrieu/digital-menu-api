@@ -14,6 +14,7 @@ namespace DigitalMenuApi.Profiles
             CreateMap<BoxUpdateDto, Box>();
             CreateMap<Box, BoxUpdateDto>();
             CreateMap<BoxCreateDto, Box>();
+            CreateMap<BoxCreateWithTemplateDto, Box>();
 
         }
 
