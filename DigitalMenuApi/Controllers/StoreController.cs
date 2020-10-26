@@ -1,6 +1,10 @@
 using AutoMapper;
+using DigitalMenuApi.Dtos.AccountDtos;
+using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.Dtos.ProductDtos;
+using DigitalMenuApi.Dtos.ScreenDtos;
 using DigitalMenuApi.Dtos.StoreDtos;
+using DigitalMenuApi.Dtos.TemplateDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
 using Microsoft.AspNetCore.JsonPatch;
@@ -15,22 +19,42 @@ namespace DigitalMenuApi.Controllers
     {
         private readonly IStoreRepository _repository;
         private readonly IProductRepository _productRepository;
+        private readonly IAccountRepository _accountRepository;
         private readonly IMapper _mapper;
+        private readonly ITemplateRepository _templateRepository;
+        private readonly IScreenRepository _screenRepository;
 
-        public StoresController(IStoreRepository repository, IMapper mapper, IProductRepository productRepository)
+        public StoresController(IStoreRepository repository, IMapper mapper, IProductRepository productRepository, IAccountRepository accountRepository, ITemplateRepository templateRepository, IScreenRepository screenRepository)
         {
             _repository = repository;
             _mapper = mapper;
             _productRepository = productRepository;
+            _accountRepository = accountRepository;
+            _templateRepository = templateRepository;
+            _screenRepository = screenRepository;
         }
 
         // GET: api/Stores
         [HttpGet]
-        public IActionResult GetStore(int page, int limit)
+        public IActionResult GetStore(int page = 1, int limit = 10, string searchValue = "")
         {
-            IEnumerable<Store> Stores = _repository.GetAll(page, limit, x => x.IsAvailable == true);
-            return Ok(_mapper.Map<IEnumerable<StoreReadDto>>(Stores));
-            //return Ok(Stores);
+            PagingDto<Store> dto = _repository.GetAll(page, limit, x => x.IsAvailable == true && x.Name.Contains(searchValue));
+
+            var store = _mapper.Map<IEnumerable<StoreReadDto>>(dto.Result);
+
+            var response = new PagingResponseDto<StoreReadDto> { Result = store, Count = dto.Count };
+            if (limit > 0)
+            {
+                if (dto.Count / limit > page)
+                {
+                    response.NextPage = Url.Link(null, new { page = page + 1, limit, searchValue });
+                }
+
+                if (page > 1)
+                    response.PreviousPage = Url.Link(null, new { page = page - 1, limit, searchValue });
+            }
+
+            return Ok(response);
         }
 
 
@@ -50,12 +74,92 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Stores/5/Product
         [HttpGet("{id}/Products")]
-        public IActionResult GetAllProductOfStore(int id, int page, int limit)
+        public IActionResult GetAllProductOfStore(int id, int page = 1, int limit = 10)
         {
-            IEnumerable<Product> Products = _productRepository.GetAll(page, limit,
-                predicate: x => x.IsAvailable == true && x.StoreId == id,
-                including: x => x.Store);
-            return Ok(_mapper.Map<IEnumerable<ProductReadDto>>(Products));
+            PagingDto<Product> dto = _productRepository.GetAll(page, limit, predicate: x => x.IsAvailable == true && x.StoreId == id, x => x.Store);
+
+            var product = _mapper.Map<IEnumerable<ProductReadDto>>(dto.Result);
+
+            var response = new PagingResponseDto<ProductReadDto> { Result = product, Count = dto.Count };
+            if (limit > 0)
+            {
+                if (dto.Count / limit > page)
+                {
+                    response.NextPage = Url.Link(null, new { page = page + 1, limit });
+                }
+
+                if (page > 1)
+                    response.PreviousPage = Url.Link(null, new { page = page - 1, limit });
+            }
+
+            return Ok(response);
+        }
+
+        [HttpGet("{id}/Accounts")]
+        public IActionResult GetAllAccountOfStore(int id, int page= 1, int limit = 10)
+        {
+            PagingDto<Account> dto = _accountRepository.GetAll(page, limit, x => x.IsAvailable == true && x.StoreId == id, x => x.Role, x => x.Store);
+
+            var accounts = _mapper.Map<IEnumerable<AccountReadDto>>(dto.Result);
+
+            var response = new PagingResponseDto<AccountReadDto> { Result = accounts, Count = dto.Count };
+
+            if (limit > 0)
+            {
+                if (dto.Count / limit > page)
+                {
+                    response.NextPage = Url.Link(null, new { page = page + 1, limit });
+                }
+
+                if (page > 1)
+                    response.PreviousPage = Url.Link(null, new { page = page - 1, limit });
+            }
+
+            return Ok(response);
+        }
+
+        [HttpGet("{id}/Templates")]
+        public IActionResult GetAllTemplateOfStore(int id, int page = 1, int limit = 10)
+        {
+            PagingDto<Template> dto = _templateRepository.GetAll(page, limit, x => x.IsAvailable == true && x.StoreId == id);
+
+            var templates = _mapper.Map<IEnumerable<TemplateReadDto>>(dto.Result);
+
+            var response = new PagingResponseDto<TemplateReadDto> { Result = templates, Count = dto.Count };
+
+            if (limit > 0)
+            {
+                if (dto.Count / limit > page)
+                {
+                    response.NextPage = Url.Link(null, new { page = page + 1, limit });
+                }
+
+                if (page > 1)
+                    response.PreviousPage = Url.Link(null, new { page = page - 1, limit });
+            }
+
+            return Ok(response);
+        }[HttpGet("{id}/Screens")]
+        public IActionResult GetAllScreenOfStore(int id, int page = 1, int limit = 10)
+        {
+            PagingDto<Screen> dto = _screenRepository.GetAll(page, limit, x => x.IsAvailable == true && x.StoreId == id);
+
+            var screens = _mapper.Map<IEnumerable<ScreenReadDto>>(dto.Result);
+
+            var response = new PagingResponseDto<ScreenReadDto> { Result = screens, Count = dto.Count };
+
+            if (limit > 0)
+            {
+                if (dto.Count / limit > page)
+                {
+                    response.NextPage = Url.Link(null, new { page = page + 1, limit });
+                }
+
+                if (page > 1)
+                    response.PreviousPage = Url.Link(null, new { page = page - 1, limit });
+            }
+
+            return Ok(response);
         }
 
         // PUT: api/Stores/5

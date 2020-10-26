@@ -1,4 +1,5 @@
 ﻿using DigitalMenuApi.Data;
+using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.Models.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
@@ -39,7 +40,9 @@ namespace DigitalMenuApi.GenericRepository
 
         public TEntity Get(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including)
         {
-            return DbSetIncluding(including).Where(predicate).FirstOrDefault<TEntity>();
+            IQueryable<TEntity> query = _dbSet.AsQueryable();
+
+            return DbSetIncluding(query, including).Where(predicate).FirstOrDefault<TEntity>();
         }
 
         public TEntity Get(Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> includer = null)
@@ -68,28 +71,39 @@ namespace DigitalMenuApi.GenericRepository
 
         public IQueryable<TEntity> GetAll(params Expression<Func<TEntity, object>>[] including)
         {
-            return DbSetIncluding(including);
+            IQueryable<TEntity> query = _dbSet.AsQueryable();
+
+            return DbSetIncluding(query, including);
         }
 
         public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including)
         {
-            return DbSetIncluding(including).Where(predicate);
+            IQueryable<TEntity> query = _dbSet.AsQueryable();
+
+            return DbSetIncluding(query, including).Where(predicate);
         }
 
-        public IQueryable<TEntity> GetAll(int page, int limit, Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including)
+        public PagingDto<TEntity> GetAll(int page, int limit, Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including)
         {
-            return DbSetIncluding(including).Where(predicate).Paging<TEntity>(page, limit);
+
+            IQueryable<TEntity> query = _dbSet.AsQueryable();
+
+            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).Where(predicate).Paging<TEntity>(page, limit), query.Count());
+
+            return dto;
         }
 
-        public IQueryable<TEntity> GetAll(int page, int limit, params Expression<Func<TEntity, object>>[] including)
-        {
-            return DbSetIncluding(including).Paging<TEntity>(page, limit);
-        }
-
-        private IQueryable<TEntity> DbSetIncluding(Expression<Func<TEntity, object>>[] including)
+        public PagingDto<TEntity> GetAll(int page, int limit, params Expression<Func<TEntity, object>>[] including)
         {
             IQueryable<TEntity> query = _dbSet.AsQueryable();
 
+            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).Paging<TEntity>(page, limit), query.Count());
+
+            return dto;
+        }
+
+        private IQueryable<TEntity> DbSetIncluding(IQueryable<TEntity> query, Expression<Func<TEntity, object>>[] including)
+        {
             if (including != null)
                 including.ToList().ForEach(include =>
                 {
@@ -99,5 +113,6 @@ namespace DigitalMenuApi.GenericRepository
 
             return query;
         }
+
     }
 }

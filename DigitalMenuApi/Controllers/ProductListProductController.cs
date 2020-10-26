@@ -1,4 +1,5 @@
 using AutoMapper;
+using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.Dtos.ProductListProductDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
@@ -23,11 +24,25 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/ProductListProducts
         [HttpGet]
-        public IActionResult GetProductListProduct(int page, int limit)
+        public IActionResult GetProductListProduct(int page = 1, int limit = 10)
         {
-            IEnumerable<ProductListProduct> ProductListProducts = _repository.GetAll(page, limit, x => x.IsAvailable == true);
-            return Ok(_mapper.Map<IEnumerable<ProductListProductReadDto>>(ProductListProducts));
-            //return Ok(ProductListProducts);
+            PagingDto<ProductListProduct> dto = _repository.GetAll(page, limit, x => x.IsAvailable == true);
+
+            var productListProduct = _mapper.Map<IEnumerable<ProductListProductReadDto>>(dto.Result);
+
+            var response = new PagingResponseDto<ProductListProductReadDto> { Result = productListProduct, Count = dto.Count };
+            if (limit > 0)
+            {
+                if (dto.Count / limit > page)
+                {
+                    response.NextPage = Url.Link(null, new { page = page + 1, limit });
+                }
+
+                if (page > 1)
+                    response.PreviousPage = Url.Link(null, new { page = page - 1, limit });
+            }
+
+            return Ok(response);
         }
 
 

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DigitalMenuApi.Dtos.BoxDtos;
+using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
 using Microsoft.AspNetCore.JsonPatch;
@@ -23,10 +24,26 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Boxs
         [HttpGet]
-        public IActionResult GetBox(int page, int limit)
+        public IActionResult GetBox(int page = 1, int limit = 10)
         {
-            IEnumerable<Box> Boxs = _repository.GetAll(page, limit, x => x.IsAvailable == true);
-            return Ok(_mapper.Map<IEnumerable<BoxReadDto>>(Boxs));
+            PagingDto<Box> dto = _repository.GetAll(page, limit, x => x.IsAvailable == true);
+
+            var boxes = _mapper.Map<IEnumerable<BoxReadDto>>(dto.Result);
+
+            var response = new PagingResponseDto<BoxReadDto> { Result = boxes, Count = dto.Count };
+            if (limit > 0)
+            {
+                if (dto.Count / limit > page)
+                {
+                    response.NextPage = Url.Link(null, new { page = page + 1, limit });
+                }
+
+                if (page > 1)
+                    response.PreviousPage = Url.Link(null, new { page = page - 1, limit });
+            }
+
+            return Ok(response);
+
             //return Ok(Boxs);
         }
 

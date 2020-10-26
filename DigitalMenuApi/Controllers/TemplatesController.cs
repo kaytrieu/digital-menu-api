@@ -1,4 +1,5 @@
 using AutoMapper;
+using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.Dtos.TemplateDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
@@ -32,13 +33,27 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Templates
         [HttpGet]
-        public ActionResult<IEnumerable<TemplateReadDto>> GetTemplate(int page, int limit, string tag = "", string searchValue = "")
+        public ActionResult<IEnumerable<TemplateReadDto>> GetTemplate(int page = 1, int limit = 10, string tag = "", string searchValue = "")
         {
-            IEnumerable<Template> templates = _templateRepository.GetAll(page, limit, predicate: x => x.IsAvailable == true
-                                                                      && x.Tags.ToLower().Contains(tag.ToLower())
-                                                                      && x.Name.ToLower().Contains(searchValue.ToLower()));
+            PagingDto<Template> dto = _templateRepository.GetAll(page, limit, predicate: x => x.IsAvailable == true
+                                                                      && (x.Tags.ToLower().Contains(tag.ToLower())
+                                                                      || x.Name.ToLower().Contains(searchValue.ToLower())));
 
-            return Ok(_mapper.Map<IEnumerable<TemplateReadDto>>(templates));
+            IEnumerable<TemplateReadDto> templates = _mapper.Map<IEnumerable<TemplateReadDto>>(dto.Result);
+
+            var response = new PagingResponseDto<TemplateReadDto> { Result = templates, Count = dto.Count };
+
+            if (limit > 0)
+            {
+                if (dto.Count / limit > page)
+                {
+                    response.NextPage = Url.Link(null, new { page = page + 1, limit, tag, searchValue });
+                }
+
+                if (page > 1)
+                    response.PreviousPage = Url.Link(null, new { page = page - 1, limit, tag, searchValue });
+            }
+            return Ok(response);
         }
 
         // GET: api/Templates/5
@@ -88,7 +103,7 @@ namespace DigitalMenuApi.Controllers
 
         // POST: api/Templates
         [HttpPost]
-        public IActionResult PostTemplate([FromForm]TemplatePostFormWrapper formWrapper)
+        public IActionResult PostTemplate([FromForm] TemplatePostFormWrapper formWrapper)
         {
             var file = formWrapper.file;
             TemplateCreateDto templateDto = JsonConvert.DeserializeObject<TemplateCreateDto>(formWrapper.templateDtoJson);

@@ -1,4 +1,5 @@
 using AutoMapper;
+using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.Dtos.ScreenDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
@@ -23,11 +24,25 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Screens
         [HttpGet]
-        public IActionResult GetScreen(int page, int limit)
+        public IActionResult GetScreen(int page = 1, int limit = 10)
         {
-            IEnumerable<Screen> Screens = _repository.GetAll(page, limit, x => x.IsAvailable == true);
-            return Ok(_mapper.Map<IEnumerable<ScreenReadDto>>(Screens));
-            //return Ok(Screens);
+            PagingDto<Screen> dto = _repository.GetAll(page, limit, x => x.IsAvailable == true);
+
+            var screen = _mapper.Map<IEnumerable<ScreenReadDto>>(dto.Result);
+
+            var response = new PagingResponseDto<ScreenReadDto> { Result = screen, Count = dto.Count };
+            if (limit > 0)
+            {
+                if (dto.Count / limit > page)
+                {
+                    response.NextPage = Url.Link(null, new { page = page + 1, limit });
+                }
+
+                if (page > 1)
+                    response.PreviousPage = Url.Link(null, new { page = page - 1, limit });
+            }
+
+            return Ok(response);
         }
 
 

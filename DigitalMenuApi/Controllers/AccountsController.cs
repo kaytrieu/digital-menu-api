@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DigitalMenuApi.Dtos.AccountDtos;
+using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
 using Microsoft.AspNetCore.JsonPatch;
@@ -26,11 +27,26 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Accounts
         [HttpGet]
-        public IActionResult GetAccount(int page, int limit)
+        public IActionResult GetAccount(int page = 1, int limit = 10, string searchValue = "")
         {
-            IEnumerable<Account> accounts = _repository.GetAll(page, limit, x => x.IsAvailable == true, x => x.Role, x => x.Store);
+            PagingDto<Account> dto = _repository.GetAll(page, limit, x => x.IsAvailable == true && x.Username.Contains(searchValue), x => x.Role, x => x.Store);
 
-            return Ok(_mapper.Map<IEnumerable<AccountReadDto>>(accounts));
+            var accounts = _mapper.Map<IEnumerable<AccountReadDto>>(dto.Result);
+
+            var response = new PagingResponseDto<AccountReadDto> { Result = accounts, Count = dto.Count };
+            
+            if (limit > 0)
+            {
+                if (dto.Count / limit > page)
+                {
+                    response.NextPage = Url.Link(null, new { page = page + 1, limit, searchValue});
+                }
+
+                if (page > 1)
+                    response.PreviousPage = Url.Link(null, new { page = page - 1, limit, searchValue});
+            }
+
+            return Ok(response);
         }
 
 

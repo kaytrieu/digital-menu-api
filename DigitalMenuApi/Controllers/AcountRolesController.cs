@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DigitalMenuApi.Dtos.AccountRoleDtos;
+using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
 using Microsoft.AspNetCore.JsonPatch;
@@ -23,11 +24,26 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/AccountRoles
         [HttpGet]
-        public IActionResult GetAccountRole(int page, int limit)
+        public IActionResult GetAccountRole(int page = 1, int limit = 10, string searchValue = "")
         {
-            IEnumerable<AccountRole> AccountRoles = _repository.GetAll(page, limit, x => x.IsAvailable == true);
-            return Ok(_mapper.Map<IEnumerable<AccountRoleReadDto>>(AccountRoles));
-            //return Ok(AccountRoles);
+            PagingDto<AccountRole> dto = _repository.GetAll(page, limit, x => x.IsAvailable == true && x.Name.Contains(searchValue));
+
+            var accountRoles = _mapper.Map<IEnumerable<AccountRoleReadDto>>(dto.Result);
+
+            var response = new PagingResponseDto<AccountRoleReadDto> { Result = accountRoles, Count = dto.Count };
+
+            if (limit > 0)
+            {
+                if (dto.Count / limit > page)
+                {
+                    response.NextPage = Url.Link(null, new { page = page + 1, limit, searchValue });
+                }
+
+                if (page > 1)
+                    response.PreviousPage = Url.Link(null, new { page = page - 1, limit, searchValue });
+            }
+
+            return Ok(response);
         }
 
 

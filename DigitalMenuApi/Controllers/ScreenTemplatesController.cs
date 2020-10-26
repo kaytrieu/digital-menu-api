@@ -1,4 +1,5 @@
 using AutoMapper;
+using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.Dtos.ScreenTemplateDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
@@ -23,11 +24,25 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/ScreenTemplates
         [HttpGet]
-        public IActionResult GetScreenTemplate(int page, int limit)
+        public IActionResult GetScreenTemplate(int page = 1, int limit = 10)
         {
-            IEnumerable<ScreenTemplate> ScreenTemplates = _repository.GetAll(page, limit, x => x.IsAvailable == true);
-            return Ok(_mapper.Map<IEnumerable<ScreenTemplateReadDto>>(ScreenTemplates));
-            //return Ok(ScreenTemplates);
+            PagingDto<ScreenTemplate> dto = _repository.GetAll(page, limit, x => x.IsAvailable == true);
+
+            var screenTemplate = _mapper.Map<IEnumerable<ScreenTemplateReadDto>>(dto.Result);
+
+            var response = new PagingResponseDto<ScreenTemplateReadDto> { Result = screenTemplate, Count = dto.Count };
+            if (limit > 0)
+            {
+                if (dto.Count / limit > page)
+                {
+                    response.NextPage = Url.Link(null, new { page = page + 1, limit });
+                }
+
+                if (page > 1)
+                    response.PreviousPage = Url.Link(null, new { page = page - 1, limit });
+            }
+
+            return Ok(response);
         }
 
 
@@ -80,7 +95,7 @@ namespace DigitalMenuApi.Controllers
 
             ScreenTemplateReadDto ScreenTemplateReadDto = _mapper.Map<ScreenTemplateReadDto>(ScreenTemplateModel);
 
-            return CreatedAtAction("GetScreenTemplate", new { id = ScreenTemplateReadDto.Id }, ScreenTemplateCreateDto);
+            return CreatedAtAction("GetScreenTemplate", new { id = ScreenTemplateReadDto.Id }, ScreenTemplateModel);
 
         }
 
