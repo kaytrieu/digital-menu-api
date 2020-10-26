@@ -78,17 +78,17 @@ namespace DigitalMenuApi.GenericRepository
 
         public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including)
         {
-            IQueryable<TEntity> query = _dbSet.AsQueryable();
+            IQueryable<TEntity> query = _dbSet.AsQueryable().Where(predicate);
 
-            return DbSetIncluding(query, including).Where(predicate);
+            return DbSetIncluding(query, including);
         }
 
         public PagingDto<TEntity> GetAll(int page, int limit, Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including)
         {
 
-            IQueryable<TEntity> query = _dbSet.AsQueryable();
+            IQueryable<TEntity> query = _dbSet.AsQueryable().Where(predicate);
 
-            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).Where(predicate).Paging<TEntity>(page, limit), query.Count());
+            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).Paging<TEntity>(page, limit), query.Count());
 
             return dto;
         }
