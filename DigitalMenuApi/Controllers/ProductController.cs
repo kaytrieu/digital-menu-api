@@ -3,6 +3,7 @@ using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.Dtos.ProductDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
+using DigitalMenuApi.Models.Extensions;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -26,6 +27,8 @@ namespace DigitalMenuApi.Controllers
         [HttpGet]
         public IActionResult GetProduct(int page = 1, int limit = 10, string searchValue = "")
         {
+            searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
+
             PagingDto<Product> dto = _repository.GetAll(page, limit, predicate: x => x.IsAvailable == true && x.Title.Contains(searchValue), x => x.Store);
 
             var product = _mapper.Map<IEnumerable<ProductReadDto>>(dto.Result);
