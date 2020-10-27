@@ -3,7 +3,6 @@ using DigitalMenuApi.Dtos.BoxTypeDtos;
 using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
-using DigitalMenuApi.Models.Extensions;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -27,8 +26,6 @@ namespace DigitalMenuApi.Controllers
         [HttpGet]
         public IActionResult GetBoxType(int page = 1, int limit = 10, string searchValue = "")
         {
-            searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
-
             PagingDto<BoxType> dto = _repository.GetAll(page, limit, x => x.IsAvailable == true && x.Name.Contains(searchValue));
 
             var boxTypes = _mapper.Map<IEnumerable<BoxTypeReadDto>>(dto.Result);

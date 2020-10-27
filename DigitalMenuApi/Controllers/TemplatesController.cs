@@ -3,7 +3,6 @@ using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.Dtos.TemplateDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
-using DigitalMenuApi.Models.Extensions;
 using DigitalMenuApi.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
@@ -36,9 +35,6 @@ namespace DigitalMenuApi.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<TemplateReadDto>> GetTemplate(int page = 1, int limit = 10, string tag = "", string searchValue = "")
         {
-            searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
-            tag = tag.IsNullOrEmpty() ? "" : tag.Trim();
-
             PagingDto<Template> dto = _templateRepository.GetAll(page, limit, predicate: x => x.IsAvailable == true
                                                                       && (x.Tags.ToLower().Contains(tag.ToLower())
                                                                       || x.Name.ToLower().Contains(searchValue.ToLower())));

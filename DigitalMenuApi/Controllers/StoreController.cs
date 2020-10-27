@@ -7,7 +7,6 @@ using DigitalMenuApi.Dtos.StoreDtos;
 using DigitalMenuApi.Dtos.TemplateDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
-using DigitalMenuApi.Models.Extensions;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -39,8 +38,6 @@ namespace DigitalMenuApi.Controllers
         [HttpGet]
         public IActionResult GetStore(int page = 1, int limit = 10, string searchValue = "")
         {
-            searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
-
             PagingDto<Store> dto = _repository.GetAll(page, limit, x => x.IsAvailable == true && x.Name.Contains(searchValue));
 
             var store = _mapper.Map<IEnumerable<StoreReadDto>>(dto.Result);
@@ -77,11 +74,9 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Stores/5/Product
         [HttpGet("{id}/Products")]
-        public IActionResult GetAllProductOfStore(int id, int page = 1, int limit = 10, string searchValue = "")
+        public IActionResult GetAllProductOfStore(int id, int page = 1, int limit = 10)
         {
-            searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
-
-            PagingDto<Product> dto = _productRepository.GetAll(page, limit, predicate: x => x.IsAvailable == true && x.StoreId == id && x.Title.Contains(searchValue), x => x.Store);
+            PagingDto<Product> dto = _productRepository.GetAll(page, limit, predicate: x => x.IsAvailable == true && x.StoreId == id, x => x.Store);
 
             var product = _mapper.Map<IEnumerable<ProductReadDto>>(dto.Result);
 
@@ -90,23 +85,20 @@ namespace DigitalMenuApi.Controllers
             {
                 if (dto.Count / limit > page)
                 {
-                    response.NextPage = Url.Link(null, new { page = page + 1, limit, searchValue });
+                    response.NextPage = Url.Link(null, new { page = page + 1, limit });
                 }
 
                 if (page > 1)
-                    response.PreviousPage = Url.Link(null, new { page = page - 1, limit, searchValue });
+                    response.PreviousPage = Url.Link(null, new { page = page - 1, limit });
             }
 
             return Ok(response);
-            //return Ok(Products);
         }
 
         [HttpGet("{id}/Accounts")]
-        public IActionResult GetAllAccountOfStore(int id, int page= 1, int limit = 10, string searchValue = "")
+        public IActionResult GetAllAccountOfStore(int id, int page= 1, int limit = 10)
         {
-            searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
-
-            PagingDto<Account> dto = _accountRepository.GetAll(page, limit, x => x.IsAvailable == true && x.StoreId == id && x.Username.Contains(searchValue), x => x.Role, x => x.Store);
+            PagingDto<Account> dto = _accountRepository.GetAll(page, limit, x => x.IsAvailable == true && x.StoreId == id, x => x.Role, x => x.Store);
 
             var accounts = _mapper.Map<IEnumerable<AccountReadDto>>(dto.Result);
 
@@ -116,27 +108,22 @@ namespace DigitalMenuApi.Controllers
             {
                 if (dto.Count / limit > page)
                 {
-                    response.NextPage = Url.Link(null, new { page = page + 1, limit, searchValue });
+                    response.NextPage = Url.Link(null, new { page = page + 1, limit });
                 }
 
                 if (page > 1)
-                    response.PreviousPage = Url.Link(null, new { page = page - 1, limit, searchValue });
+                    response.PreviousPage = Url.Link(null, new { page = page - 1, limit });
             }
 
             return Ok(response);
         }
 
         [HttpGet("{id}/Templates")]
-        public IActionResult GetAllTemplateOfStore(int id, int page = 1, int limit = 10, string tag = "", string searchValue = "")
+        public IActionResult GetAllTemplateOfStore(int id, int page = 1, int limit = 10)
         {
-            searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
-            tag = tag.IsNullOrEmpty() ? "" : tag.Trim();
+            PagingDto<Template> dto = _templateRepository.GetAll(page, limit, x => x.IsAvailable == true && x.StoreId == id);
 
-            PagingDto<Template> dto = _templateRepository.GetAll(page, limit, predicate: x => x.IsAvailable == true
-                                                                      && (x.Tags.ToLower().Contains(tag.ToLower())
-                                                                      || x.Name.ToLower().Contains(searchValue.ToLower())));
-
-            IEnumerable<TemplateReadDto> templates = _mapper.Map<IEnumerable<TemplateReadDto>>(dto.Result);
+            var templates = _mapper.Map<IEnumerable<TemplateReadDto>>(dto.Result);
 
             var response = new PagingResponseDto<TemplateReadDto> { Result = templates, Count = dto.Count };
 
@@ -144,17 +131,15 @@ namespace DigitalMenuApi.Controllers
             {
                 if (dto.Count / limit > page)
                 {
-                    response.NextPage = Url.Link(null, new { page = page + 1, limit, tag, searchValue });
+                    response.NextPage = Url.Link(null, new { page = page + 1, limit });
                 }
 
                 if (page > 1)
-                    response.PreviousPage = Url.Link(null, new { page = page - 1, limit, tag, searchValue });
+                    response.PreviousPage = Url.Link(null, new { page = page - 1, limit });
             }
+
             return Ok(response);
-        }
-
-
-        [HttpGet("{id}/Screens")]
+        }[HttpGet("{id}/Screens")]
         public IActionResult GetAllScreenOfStore(int id, int page = 1, int limit = 10)
         {
             PagingDto<Screen> dto = _screenRepository.GetAll(page, limit, x => x.IsAvailable == true && x.StoreId == id);
