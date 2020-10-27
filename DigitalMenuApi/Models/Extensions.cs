@@ -13,5 +13,19 @@ namespace DigitalMenuApi.Models.Extensions
 
             return query;
         }
+
+        public static bool IsNullOrEmpty(this string str)
+        {
+            bool isNullOrEmpty = false;
+            if (str == null)
+            {
+                isNullOrEmpty = true;
+            }
+            else if (str.Equals(""))
+            {
+                isNullOrEmpty = true;
+            }
+            return isNullOrEmpty;
+        }
     }
 }
