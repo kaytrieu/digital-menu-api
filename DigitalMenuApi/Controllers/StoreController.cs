@@ -77,7 +77,7 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Stores/5/Product
         [HttpGet("{id}/Products")]
-        public IActionResult GetAllProductOfStore(int id, int page = 1, int limit = 10, string searchValue = "")
+        public ActionResult<PagingResponseDto<ProductReadDto>> GetAllProductOfStore(int id, int page = 1, int limit = 10, string searchValue = "")
         {
             searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
 
@@ -102,7 +102,7 @@ namespace DigitalMenuApi.Controllers
         }
 
         [HttpGet("{id}/Accounts")]
-        public IActionResult GetAllAccountOfStore(int id, int page= 1, int limit = 10, string searchValue = "")
+        public ActionResult<PagingResponseDto<AccountReadDto>> GetAllAccountOfStore(int id, int page= 1, int limit = 10, string searchValue = "")
         {
             searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
 
@@ -127,7 +127,7 @@ namespace DigitalMenuApi.Controllers
         }
 
         [HttpGet("{id}/Templates")]
-        public IActionResult GetAllTemplateOfStore(int id, int page = 1, int limit = 10, string tag = "", string searchValue = "")
+        public ActionResult<PagingResponseDto<TemplateReadDto>> GetAllTemplateOfStore(int id, int page = 1, int limit = 10, string tag = "", string searchValue = "")
         {
             searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
             tag = tag.IsNullOrEmpty() ? "" : tag.Trim();
@@ -155,7 +155,7 @@ namespace DigitalMenuApi.Controllers
 
 
         [HttpGet("{id}/Screens")]
-        public IActionResult GetAllScreenOfStore(int id, int page = 1, int limit = 10)
+        public ActionResult<PagingResponseDto<ScreenReadDto>> GetAllScreenOfStore(int id, int page = 1, int limit = 10)
         {
             PagingDto<Screen> dto = _screenRepository.GetAll(page, limit, x => x.IsAvailable == true && x.StoreId == id);
 
