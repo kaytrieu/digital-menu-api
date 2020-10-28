@@ -34,7 +34,7 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Templates
         [HttpGet]
-        public ActionResult<IEnumerable<TemplateReadDto>> GetTemplate(int page = 1, int limit = 10, string tag = "", string searchValue = "")
+        public ActionResult<PagingResponseDto<TemplateReadDto>> GetTemplate(int page = 1, int limit = 10, string tag = "", string searchValue = "")
         {
             searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
             tag = tag.IsNullOrEmpty() ? "" : tag.Trim();

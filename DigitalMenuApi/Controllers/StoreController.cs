@@ -37,7 +37,7 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Stores
         [HttpGet]
-        public IActionResult GetStore(int page = 1, int limit = 10, string searchValue = "")
+        public ActionResult<PagingResponseDto<StoreReadDto>> GetStore(int page = 1, int limit = 10, string searchValue = "")
         {
             searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
 

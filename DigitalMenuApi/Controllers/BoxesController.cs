@@ -24,7 +24,7 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Boxs
         [HttpGet]
-        public IActionResult GetBox(int page = 1, int limit = 10)
+        public ActionResult<PagingResponseDto<BoxReadDto>> GetBox(int page = 1, int limit = 10)
         {
             PagingDto<Box> dto = _repository.GetAll(page, limit, x => x.IsAvailable == true);
 
@@ -43,8 +43,6 @@ namespace DigitalMenuApi.Controllers
             }
 
             return Ok(response);
-
-            //return Ok(Boxs);
         }
 
 

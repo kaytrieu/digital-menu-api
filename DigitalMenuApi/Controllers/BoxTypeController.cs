@@ -25,7 +25,7 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/BoxTypes
         [HttpGet]
-        public IActionResult GetBoxType(int page = 1, int limit = 10, string searchValue = "")
+        public ActionResult<PagingResponseDto<BoxTypeReadDto>> GetBoxType(int page = 1, int limit = 10, string searchValue = "")
         {
             searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
 

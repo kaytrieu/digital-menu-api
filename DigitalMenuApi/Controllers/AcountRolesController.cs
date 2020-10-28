@@ -25,7 +25,7 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/AccountRoles
         [HttpGet]
-        public IActionResult GetAccountRole(int page = 1, int limit = 10, string searchValue = "")
+        public ActionResult<PagingResponseDto<AccountRoleReadDto>> GetAccountRole(int page = 1, int limit = 10, string searchValue = "")
         {
             searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
 

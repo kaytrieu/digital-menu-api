@@ -25,7 +25,7 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Products
         [HttpGet]
-        public IActionResult GetProduct(int page = 1, int limit = 10, string searchValue = "")
+        public ActionResult<PagingResponseDto<ProductReadDto>> GetProduct(int page = 1, int limit = 10, string searchValue = "")
         {
             searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
 

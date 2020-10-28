@@ -24,7 +24,7 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/ProductLists
         [HttpGet]
-        public IActionResult GetProductList(int page = 1, int limit = 10)
+        public ActionResult<PagingResponseDto<ProductListReadDto>> GetProductList(int page = 1, int limit = 10)
         {
             PagingDto<ProductList> dto = _repository.GetAll(page, limit, x => x.IsAvailable == true);
 

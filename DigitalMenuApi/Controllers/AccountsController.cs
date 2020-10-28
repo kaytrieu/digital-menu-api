@@ -91,7 +91,7 @@ namespace DigitalMenuApi.Controllers
 
         // POST: api/Accounts
         [HttpPost]
-        public IActionResult PostAccount(AccountCreateDto accountCreateDto)
+        public ActionResult<AccountReadDto> PostAccount(AccountCreateDto accountCreateDto)
         {
             Account accountModel = _mapper.Map<Account>(accountCreateDto);
 

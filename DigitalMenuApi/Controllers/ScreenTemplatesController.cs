@@ -24,7 +24,7 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/ScreenTemplates
         [HttpGet]
-        public IActionResult GetScreenTemplate(int page = 1, int limit = 10)
+        public ActionResult<PagingResponseDto<ScreenTemplateReadDto>> GetScreenTemplate(int page = 1, int limit = 10)
         {
             PagingDto<ScreenTemplate> dto = _repository.GetAll(page, limit, x => x.IsAvailable == true);
 
