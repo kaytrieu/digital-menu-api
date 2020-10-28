@@ -61,7 +61,7 @@ namespace DigitalMenuApi.Controllers
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Issuer"],
                 claims,
-                expires: DateTime.Now.AddMinutes(120),
+                expires: null,
                 signingCredentials: credentials
 
                 );

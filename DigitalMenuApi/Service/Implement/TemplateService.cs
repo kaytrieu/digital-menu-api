@@ -90,9 +90,8 @@ namespace DigitalMenuApi.Service.Implement
                         }
                     }
 
-                    transaction.Commit();
-                    _dbContext.Dispose();
                 }
+                transaction.Commit();
             }
             catch
             {

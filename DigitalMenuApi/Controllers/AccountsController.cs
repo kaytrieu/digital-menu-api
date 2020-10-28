@@ -28,7 +28,7 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Accounts
         [HttpGet]
-        public IActionResult GetAccount(int page = 1, int limit = 10, string searchValue = "")
+        public ActionResult<PagingResponseDto<AccountReadDto>> GetAccount(int page = 1, int limit = 10, string searchValue = "")
         {
             searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
 
@@ -104,49 +104,6 @@ namespace DigitalMenuApi.Controllers
 
         }
 
-        // POST: api/Accounts
-        //[HttpPost]
-        //[Route("api/login.json")]
-        //public IActionResult Login([FromBody] AccountLoginDto loginJson)
-        //{
-        //    Account accountModel = _repository.Get(x => x.Username == loginJson.Username && x.Password == loginJson.Password, x => x.Role);
-        //    if (accountModel == null)
-        //    {
-
-        //        return Ok("Invalid username or password");
-        //    }
-
-        //    string tokenStr = GenerateJSONWebToken(accountModel);
-
-        //    return Ok(new { token = tokenStr });
-
-        //}
-
-        //private string GenerateJSONWebToken(Account accountModel)
-        //{
-        //    SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-        //    SigningCredentials credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-        //    Claim[] claims = new[]
-        //    {
-        //        new Claim(ClaimTypes.Role, accountModel.Role.Name),
-        //        new Claim(ClaimTypes.Name, accountModel.Username)
-        //    };
-
-        //    JwtSecurityToken token = new JwtSecurityToken(
-        //        issuer: _config["Jwt:Issuer"],
-        //        audience: _config["Jwt:Issuer"],
-        //        claims,
-        //        expires: DateTime.Now.AddMinutes(120),
-        //        signingCredentials: credentials
-
-        //        );
-
-        //    string encodeToken = new JwtSecurityTokenHandler().WriteToken(token);
-
-        //    return encodeToken;
-
-        //}
 
         // DELETE: api/Accounts/5
         [HttpDelete("{id}")]
