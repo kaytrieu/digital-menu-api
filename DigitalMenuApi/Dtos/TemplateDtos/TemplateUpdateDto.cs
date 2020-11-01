@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DigitalMenuApi.Dtos.BoxDtos;
+using System;
+using System.Collections.Generic;
 
 namespace DigitalMenuApi.Dtos.TemplateDtos
 {
@@ -16,5 +18,6 @@ namespace DigitalMenuApi.Dtos.TemplateDtos
         public string Name { get; set; }
         public string Tags { get; set; }
         public DateTime LastModified { get; }
+        public ICollection<BoxCreateWithTemplateDto> Boxes { get; set; }
     }
 }

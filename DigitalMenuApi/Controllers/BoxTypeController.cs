@@ -36,7 +36,7 @@ namespace DigitalMenuApi.Controllers
             var response = new PagingResponseDto<BoxTypeReadDto> { Result = boxTypes, Count = dto.Count };
             if (limit > 0)
             {
-                if (dto.Count / limit > page)
+                if ((double)dto.Count / limit > page)
                 {
                     response.NextPage = Url.Link(null, new { page = page + 1, limit, searchValue });
                 }
