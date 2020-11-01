@@ -83,7 +83,7 @@ namespace DigitalMenuApi.Controllers
 
         // PUT: api/Templates/5
         [HttpPut("{id}")]
-        public IActionResult PutTemplate(int id, TemplateCreateDto TemplateUpdateDto)
+        public IActionResult PutTemplate(int id, TemplateUpdateDto TemplateUpdateDto)
         {
             Template TemplateFromRepo = _templateRepository.Get(x => x.Id == id);
 
