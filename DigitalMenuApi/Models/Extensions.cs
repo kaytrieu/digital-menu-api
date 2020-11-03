@@ -16,16 +16,7 @@ namespace DigitalMenuApi.Models.Extensions
 
         public static bool IsNullOrEmpty(this string str)
         {
-            bool isNullOrEmpty = false;
-            if (str == null)
-            {
-                isNullOrEmpty = true;
-            }
-            else if (str.Equals(""))
-            {
-                isNullOrEmpty = true;
-            }
-            return isNullOrEmpty;
+            return string.IsNullOrEmpty(str);
         }
     }
 }

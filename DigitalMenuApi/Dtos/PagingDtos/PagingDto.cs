@@ -7,10 +7,10 @@ namespace DigitalMenuApi.Dtos.PagingDtos
 {
     public class PagingDto<TEntity> where TEntity : class
     {
-        public PagingDto(IQueryable<TEntity> result, int count)
+        public PagingDto(IQueryable<TEntity> result)
         {
             Result = result;
-            Count = count;
+            Count = result.Count();
         }
 
         public PagingDto()

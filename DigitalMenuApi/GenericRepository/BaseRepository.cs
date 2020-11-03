@@ -33,6 +33,7 @@ namespace DigitalMenuApi.GenericRepository
             if (t != null)
             {
                 _dbSet.Remove(t);
+                return;
             }
             throw new ArgumentNullException(nameof(TEntity));
 
@@ -78,17 +79,17 @@ namespace DigitalMenuApi.GenericRepository
 
         public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including)
         {
-            IQueryable<TEntity> query = _dbSet.AsQueryable().Where(predicate);
+            IQueryable<TEntity> query = _dbSet.AsQueryable();
 
-            return DbSetIncluding(query, including);
+            return DbSetIncluding(query, including).Where(predicate);
         }
 
         public PagingDto<TEntity> GetAll(int page, int limit, Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including)
         {
 
-            IQueryable<TEntity> query = _dbSet.AsQueryable().Where(predicate);
+            IQueryable<TEntity> query = _dbSet.AsQueryable();
 
-            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).Paging<TEntity>(page, limit), query.Count());
+            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).Paging<TEntity>(page, limit).Where(predicate));
 
             return dto;
         }
@@ -97,7 +98,7 @@ namespace DigitalMenuApi.GenericRepository
         {
             IQueryable<TEntity> query = _dbSet.AsQueryable();
 
-            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).Paging<TEntity>(page, limit), query.Count());
+            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).Paging<TEntity>(page, limit));
 
             return dto;
         }
