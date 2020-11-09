@@ -85,22 +85,12 @@ namespace DigitalMenuApi.Controllers
         [HttpPut("{id}")]
         public IActionResult PutTemplate(int id, TemplateUpdateDto TemplateUpdateDto)
         {
-            Template TemplateFromRepo = _templateRepository.Get(x => x.Id == id);
-
-            if (TemplateFromRepo == null)
+            if(_templateService.UpdateTemplateDetail(id, TemplateUpdateDto))
             {
-                return NotFound();
+                return NoContent();
             }
 
-            //Mapper to Update
-            _mapper.Map(TemplateUpdateDto, TemplateFromRepo);
-
-            _templateRepository.Update(TemplateFromRepo);
-
-            _templateRepository.SaveChanges();
-
-
-            return NoContent();
+            return NotFound();
         }
 
         // POST: api/Templates

@@ -15,6 +15,6 @@ namespace DigitalMenuApi.Dtos.TemplateDtos
         public string Name { get; set; }
         public string Tags { get; set; }
         public DateTime LastModified { get; }
-        public ICollection<BoxCreateWithTemplateDto> Boxes { get; set; }
+        public ICollection<BoxUpdateWithTemplateDto> Boxes { get; set; }
     }
 }
