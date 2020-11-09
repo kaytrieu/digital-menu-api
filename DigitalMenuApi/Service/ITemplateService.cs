@@ -10,5 +10,6 @@ namespace DigitalMenuApi.Service
     public interface ITemplateService : IBaseService<Template>
     {
         public Template CreateNewTemplate(TemplateCreateDto templateCreateDto, string uploadedFileLink);
+        public bool UpdateTemplateDetail(int templateId, TemplateUpdateDto templateUpdateDto);
     }
 }

@@ -20,6 +20,7 @@ namespace DigitalMenuApi.Profiles
             CreateMap<ProductListUpdateDto, ProductList>();
             CreateMap<ProductList, ProductListUpdateDto>();
             CreateMap<ProductListCreateWithTemplateDto, ProductList>();
+            CreateMap<ProductListUpdateWithTemplateDto, ProductList>();
         }
 
     }

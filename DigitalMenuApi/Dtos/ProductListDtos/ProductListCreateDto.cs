@@ -1,8 +1,4 @@
-﻿using DigitalMenuApi.Dtos.ProductListProductDtos;
-using System.Collections;
-using System.Collections.Generic;
-
-namespace DigitalMenuApi.Dtos.ProductListDtos
+﻿namespace DigitalMenuApi.Dtos.ProductListDtos
 {
     public class ProductListCreateDto
     {

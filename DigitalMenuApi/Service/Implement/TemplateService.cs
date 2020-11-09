@@ -7,9 +7,7 @@ using DigitalMenuApi.Dtos.TemplateDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DigitalMenuApi.Service.Implement
 {
@@ -33,6 +31,7 @@ namespace DigitalMenuApi.Service.Implement
             _productListProductRepository = productListProductRepository;
             _productRepository = productRepository;
         }
+
 
         public Template CreateNewTemplate(TemplateCreateDto templateDto, string uploadedFileLink)
         {
@@ -99,6 +98,127 @@ namespace DigitalMenuApi.Service.Implement
             }
 
             return template;
+        }
+
+        public bool UpdateTemplateDetail(int templateId, TemplateUpdateDto templateUpdateDto)
+        {
+            Template TemplateFromRepo = _templateRepository.Get(x => x.Id == templateId);
+
+            var transaction = _dbContext.Database.BeginTransaction();
+
+            try
+            {
+                if (TemplateFromRepo == null)
+                {
+                    transaction.Rollback();
+
+                    return false;
+                }
+
+                //Mapper to Update
+                _mapper.Map(templateUpdateDto, TemplateFromRepo);
+
+                foreach (var box in templateUpdateDto.Boxes)
+                {
+                    Box boxFromRepo = _boxRepository.Get(x => x.Id == box.Id);
+
+                    if (boxFromRepo == null)
+                    {
+                        transaction.Rollback();
+                        return false;
+                    }
+
+                    _mapper.Map(box, boxFromRepo);
+                    _boxRepository.SaveChanges();
+
+
+                    foreach (var productList in box.ProductLists)
+                    {
+                        ProductList productListFromRepo = _productListRepository.Get(x => x.Id == productList.Id);
+
+                        if (productListFromRepo == null)
+                        {
+                            transaction.Rollback();
+                            return false;
+                        }
+
+                        _mapper.Map(productList, productListFromRepo);
+                        _productListRepository.SaveChanges();
+
+
+                        var productListProductfromRepoList = _productListProductRepository.GetAll(x => x.ProductListId == productList.Id && x.IsAvailable == true).OrderBy(x => x.Location);
+
+                        var productListDtoList = productList.Products.OrderBy(x => x.Location);
+
+                        //_mapper.Map(productListDtoList.ToList(), productListProductfromRepoList.ToList());
+
+                        var diff = productListDtoList.Count() - productListProductfromRepoList.Count();
+
+                        if (diff >= 0)
+                        {
+                            //mapping right productListProduct
+                            for (int i = 0; i < productListProductfromRepoList.ToList().Count; i++)
+                            {
+                                var productListProduct = _productListProductRepository.Get(x => x.Id == productListProductfromRepoList.ToList()[i].Id);
+
+                                if (productListProduct != null)
+                                {
+                                    var productTemp = productListDtoList.ToList()[i];
+                                    productListProduct.ProductId = productTemp.Id;
+                                    productListProduct.Location = productTemp.Location;
+                                    _productListProductRepository.SaveChanges();
+                                }
+                            }
+
+                            if (diff > 0)
+                            {
+                                //add more productListProduct
+                                for (int i = productListDtoList.Count() - 1; i >= productListDtoList.Count() - diff; i--)
+                                {
+                                    ProductListProduct productListProduct = _mapper.Map<ProductListProduct>(productListDtoList.ToList()[i]);
+                                    productListProduct.ProductListId = productList.Id;
+                                    _productListProductRepository.Add(productListProduct);
+                                    _productListProductRepository.SaveChanges();
+                                }
+                            }
+                        }
+                        else if (diff < 0)
+                        {
+                            //mapping right productListProduct
+                            for (int i = 0; i < productListDtoList.ToList().Count; i++)
+                            {
+                                var productListProduct = _productListProductRepository.Get(x => x.Id == productListProductfromRepoList.ToList()[i].Id);
+
+                                if (productListProduct != null)
+                                {
+                                    var productTemp = productListDtoList.ToList()[i];
+                                    productListProduct.ProductId = productTemp.Id;
+                                    productListProduct.Location = productTemp.Location;
+                                    _productListProductRepository.SaveChanges();
+                                }
+
+                            }
+
+                            for (int i = productListProductfromRepoList.Count() - 1; i >= productListProductfromRepoList.Count() + diff; i--)
+                            {
+                                _productListProductRepository.Get(x => x.Id == productListProductfromRepoList.ToList()[i].Id).IsAvailable = false;
+                                _productListProductRepository.SaveChanges();
+                                //_productListProductRepository.Delete();
+                            }
+                        }
+
+                    }
+
+                }
+
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+            }
+
+            return true;
         }
     }
 }
