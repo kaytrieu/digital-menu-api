@@ -58,6 +58,34 @@ namespace DigitalMenuApi.Controllers
             return Ok(response);
         }
 
+        [HttpGet("sample")]
+        public ActionResult<PagingResponseDto<TemplateReadDto>> GetSampleTemplate(int page = 1, int limit = 10, string tag = "", string searchValue = "")
+        {
+            searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
+            tag = tag.IsNullOrEmpty() ? "" : tag.Trim();
+
+            PagingDto<Template> dto = _templateRepository.GetAll(page, limit, predicate: x => x.IsAvailable == true
+                                                                      && (x.Tags.ToLower().Contains(tag.ToLower())
+                                                                            || x.Name.ToLower().Contains(searchValue.ToLower()))
+                                                                      && (x.StoreId == null));
+
+            IEnumerable<TemplateReadDto> templates = _mapper.Map<IEnumerable<TemplateReadDto>>(dto.Result);
+
+            var response = new PagingResponseDto<TemplateReadDto> { Result = templates, Count = dto.Count };
+
+            if (limit > 0)
+            {
+                if ((double)dto.Count / limit > page)
+                {
+                    response.NextPage = Url.Link(null, new { page = page + 1, limit, tag, searchValue });
+                }
+
+                if (page > 1)
+                    response.PreviousPage = Url.Link(null, new { page = page - 1, limit, tag, searchValue });
+            }
+            return Ok(response);
+        }
+
         // GET: api/Templates/5
         [HttpGet("{id}")]
         public ActionResult<TemplateDetailReadDto> GetDetailTemplate(int id)

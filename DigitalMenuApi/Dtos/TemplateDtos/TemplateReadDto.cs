@@ -10,6 +10,8 @@ namespace DigitalMenuApi.Dtos.TemplateDtos
         public int? StoreId { get; set; }
         public DateTime CreatedTime { get; set; }
         public string Uilink { get; set; }
+        public string Src { get; set; }
+
         public string Tags { get; set; }
     }
 }

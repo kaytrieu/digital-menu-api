@@ -22,6 +22,7 @@ namespace DigitalMenuApi.Data
             entity.Property(e => e.LastModified).HasColumnType("datetime");
 
             entity.Property(e => e.Tags).HasDefaultValueSql("('')");
+            entity.Property(e => e.Src).HasDefaultValueSql("('')");
 
             entity.Property(e => e.Uilink)
                 .HasColumnName("UILink")

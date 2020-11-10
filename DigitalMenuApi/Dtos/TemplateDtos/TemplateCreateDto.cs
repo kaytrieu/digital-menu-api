@@ -14,6 +14,8 @@ namespace DigitalMenuApi.Dtos.TemplateDtos
         public string Description { get; set; }
         public int? StoreId { get; set; }
         public string Tags { get; set; }
+        public string Src { get; set; }
+
         public DateTime CreatedTime { get;}
         public ICollection<BoxCreateWithTemplateDto> Boxes { get; set; }
     }
