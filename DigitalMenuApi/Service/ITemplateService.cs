@@ -11,5 +11,6 @@ namespace DigitalMenuApi.Service
     {
         public Template CreateNewTemplate(TemplateCreateDto templateCreateDto, string uploadedFileLink);
         public bool UpdateTemplateDetail(int templateId, TemplateUpdateDto templateUpdateDto);
+        public int GetTemplateIdFromUDID(string udid);
     }
 }

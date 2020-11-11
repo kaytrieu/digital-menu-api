@@ -18,18 +18,21 @@ namespace DigitalMenuApi.Service.Implement
         private readonly IProductListRepository _productListRepository;
         private IProductListProductRepository _productListProductRepository;
         private readonly IProductRepository _productRepository;
+        private readonly IScreenTemplateRepository _screenTemplateRepository;
 
         public TemplateService(DigitalMenuSystemContext dbContext, IMapper mapper,
                                ITemplateRepository templateRepository, IBoxRepository boxRepository,
                                IProductListRepository productListRepository,
                                IProductListProductRepository productListProductRepository,
-                               IProductRepository productRepository) : base(dbContext, mapper)
+                               IProductRepository productRepository,
+                               IScreenTemplateRepository screenTemplateRepository) : base(dbContext, mapper)
         {
             _templateRepository = templateRepository;
             _boxRepository = boxRepository;
             _productListRepository = productListRepository;
             _productListProductRepository = productListProductRepository;
             _productRepository = productRepository;
+            _screenTemplateRepository = screenTemplateRepository;
         }
 
 
@@ -219,6 +222,11 @@ namespace DigitalMenuApi.Service.Implement
             }
 
             return true;
+        }
+
+        public int GetTemplateIdFromUDID(string udid)
+        {
+            return _screenTemplateRepository.Get(x => x.Screen.Uid == udid, x => x.Screen).TemplateId;
         }
     }
 }

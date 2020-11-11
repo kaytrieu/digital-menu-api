@@ -109,6 +109,30 @@ namespace DigitalMenuApi.Controllers
             return Ok(dto);
         }
 
+        [HttpGet("udid/{udid}")]
+        public ActionResult<TemplateDetailReadDto> GetDetailTemplatebyUDID(string udid)
+        {
+            int templateId = _templateService.GetTemplateIdFromUDID(udid);
+
+            Template templateFromRepo = _templateRepository.Get(x => x.Id == templateId && x.IsAvailable == true,
+                template => template
+                .Include(template => template.Box)
+                    .ThenInclude(box => box.ProductList)
+                        .ThenInclude(productList => productList.ProductListProduct)
+                            .ThenInclude(productListProduct => productListProduct.Product)
+                .Include(template => template.Box)
+                    .ThenInclude(box => box.BoxType));
+
+            if (templateFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            TemplateDetailReadDto dto = _mapper.Map<TemplateDetailReadDto>(templateFromRepo);
+
+            return Ok(dto);
+        }
+
         // PUT: api/Templates/5
         [HttpPut("{id}")]
         public IActionResult PutTemplate(int id, TemplateUpdateDto TemplateUpdateDto)
