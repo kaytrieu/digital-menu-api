@@ -10,6 +10,7 @@ namespace DigitalMenuApi.Profiles
         {
             //Source to Target
             CreateMap<Account, AccountReadDto>();
+            CreateMap<Account, AccountReadAfterAuthenDto>();
             CreateMap<AccountUpdateDto, Account>();
             CreateMap<Account, AccountUpdateDto>();
             CreateMap<AccountCreateDto, Account>();

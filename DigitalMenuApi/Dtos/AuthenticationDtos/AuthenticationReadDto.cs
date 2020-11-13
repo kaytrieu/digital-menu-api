@@ -5,6 +5,6 @@ namespace DigitalMenuApi.Dtos.AuthenticationDtos
     public class AuthenticationReadDto
     {
         public string Token { get; set; }
-        public AccountReadDto Account { get; set; }
+        public AccountReadAfterAuthenDto Account { get; set; }
     }
 }
