@@ -14,6 +14,10 @@ namespace DigitalMenuApi.GenericRepository
         PagingDto<TEntity> GetAll(int page, int limit, Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including);
         IQueryable<TEntity> GetAll(params Expression<Func<TEntity, object>>[] including);
         PagingDto<TEntity> GetAll(int page, int limit, params Expression<Func<TEntity, object>>[] including);
+        PagingDto<TEntity> GetAllWithOrdered(int page, int limit, Expression<Func<TEntity, object>> orderBy, params Expression<Func<TEntity, object>>[] including);
+        PagingDto<TEntity> GetAllWithOrdered(int page, int limit, Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> orderBy, params Expression<Func<TEntity, object>>[] including);
+        PagingDto<TEntity> GetAllWithOrderedDecs(int page, int limit, Expression<Func<TEntity, object>> orderBy, params Expression<Func<TEntity, object>>[] including);
+        PagingDto<TEntity> GetAllWithOrderedDecs(int page, int limit, Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> orderBy, params Expression<Func<TEntity, object>>[] including);
         TEntity Get(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] including);
         TEntity Get(Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> includer = null);
         void Add(TEntity t);

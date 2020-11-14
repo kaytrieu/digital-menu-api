@@ -10,5 +10,6 @@
 
         //need to include Store
         public string StoreName { get; set; }
+        public int StoreId { get; set; }
     }
 }

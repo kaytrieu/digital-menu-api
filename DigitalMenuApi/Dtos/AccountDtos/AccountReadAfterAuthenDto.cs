@@ -7,6 +7,8 @@
         public int StoreId { get; set; }
         public string StoreName { get; set; }
         public int RoleId { get; set; }
+        public string RoleName { get; set; }
+
 
 
         //public virtual AccountRole Role { get; set; }

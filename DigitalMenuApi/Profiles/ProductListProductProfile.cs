@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using DigitalMenuApi.Dtos.ProductDtos;
-using DigitalMenuApi.Dtos.ProductDtos;
 using DigitalMenuApi.Dtos.ProductListProductDtos;
 using DigitalMenuApi.Models;
 

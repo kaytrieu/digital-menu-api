@@ -14,8 +14,6 @@ namespace DigitalMenuApi.Profiles
             CreateMap<AccountUpdateDto, Account>();
             CreateMap<Account, AccountUpdateDto>();
             CreateMap<AccountCreateDto, Account>();
-            //.ForMember(dest => dest.StoreName, opt => opt.MapFrom(src => src.Store.Name))
-            //.ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role.Name));
         }
 
     }

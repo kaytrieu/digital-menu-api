@@ -114,6 +114,41 @@ namespace DigitalMenuApi.GenericRepository
 
             return query;
         }
+        public PagingDto<TEntity> GetAllWithOrdered(int page, int limit, Expression<Func<TEntity, object>> orderBy, params Expression<Func<TEntity, object>>[] including)
+        {
+            IQueryable<TEntity> query = _dbSet.AsQueryable();
+
+            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).OrderBy(orderBy).Paging<TEntity>(page, limit));
+
+            return dto;
+        }
+
+        public PagingDto<TEntity> GetAllWithOrdered(int page, int limit, Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> orderBy, params Expression<Func<TEntity, object>>[] including)
+        {
+            IQueryable<TEntity> query = _dbSet.AsQueryable();
+
+            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).Where(predicate).OrderBy(orderBy).Paging<TEntity>(page, limit));
+
+            return dto;
+        }
+
+        public PagingDto<TEntity> GetAllWithOrderedDecs(int page, int limit, Expression<Func<TEntity, object>> orderBy, params Expression<Func<TEntity, object>>[] including)
+        {
+            IQueryable<TEntity> query = _dbSet.AsQueryable();
+
+            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).OrderByDescending(orderBy).Paging<TEntity>(page, limit));
+
+            return dto;
+        }
+
+        public PagingDto<TEntity> GetAllWithOrderedDecs(int page, int limit, Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> orderBy, params Expression<Func<TEntity, object>>[] including)
+        {
+            IQueryable<TEntity> query = _dbSet.AsQueryable();
+
+            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).Where(predicate).OrderByDescending(orderBy).Paging<TEntity>(page, limit));
+
+            return dto;
+        }
 
     }
 }
