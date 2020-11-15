@@ -89,7 +89,7 @@ namespace DigitalMenuApi.GenericRepository
 
             IQueryable<TEntity> query = _dbSet.AsQueryable();
 
-            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).Paging<TEntity>(page, limit).Where(predicate));
+            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).Where(predicate), page, limit);
 
             return dto;
         }
@@ -98,7 +98,7 @@ namespace DigitalMenuApi.GenericRepository
         {
             IQueryable<TEntity> query = _dbSet.AsQueryable();
 
-            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).Paging<TEntity>(page, limit));
+            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including), page, limit);
 
             return dto;
         }
@@ -118,7 +118,7 @@ namespace DigitalMenuApi.GenericRepository
         {
             IQueryable<TEntity> query = _dbSet.AsQueryable();
 
-            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).OrderBy(orderBy).Paging<TEntity>(page, limit));
+            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).OrderBy(orderBy), page, limit);
 
             return dto;
         }
@@ -127,7 +127,7 @@ namespace DigitalMenuApi.GenericRepository
         {
             IQueryable<TEntity> query = _dbSet.AsQueryable();
 
-            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).Where(predicate).OrderBy(orderBy).Paging<TEntity>(page, limit));
+            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).Where(predicate).OrderBy(orderBy), page, limit);
 
             return dto;
         }
@@ -136,7 +136,7 @@ namespace DigitalMenuApi.GenericRepository
         {
             IQueryable<TEntity> query = _dbSet.AsQueryable();
 
-            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).OrderByDescending(orderBy).Paging<TEntity>(page, limit));
+            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).OrderByDescending(orderBy), page, limit);
 
             return dto;
         }
@@ -145,7 +145,7 @@ namespace DigitalMenuApi.GenericRepository
         {
             IQueryable<TEntity> query = _dbSet.AsQueryable();
 
-            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).Where(predicate).OrderByDescending(orderBy).Paging<TEntity>(page, limit));
+            PagingDto<TEntity> dto = new PagingDto<TEntity>(DbSetIncluding(query, including).Where(predicate).OrderByDescending(orderBy), page, limit);
 
             return dto;
         }
