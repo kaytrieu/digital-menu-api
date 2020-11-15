@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BCrypt.Net;
 using DigitalMenuApi.Dtos.AuthenticationDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
@@ -30,11 +31,18 @@ namespace DigitalMenuApi.Controllers
         [HttpPost]
         public ActionResult<AuthenticationReadDto> Login([FromBody] AuthenticationPostDto loginJson)
         {
-            Account accountModel = _repository.Get(x => x.Username == loginJson.Username && x.Password == loginJson.Password, x => x.Role, x => x.Store);
+            Account accountModel = _repository.Get(x => x.Username == loginJson.Username, x => x.Role, x => x.Store);
+
             if (accountModel == null)
             {
-
                 return Ok("Invalid username or password");
+            }
+
+            bool isAuthorized = accountModel.Password.Equals(BCrypt.Net.BCrypt.HashPassword(loginJson.Password, accountModel.Salt));
+
+            if (!isAuthorized)
+            {
+                return Ok("Invalid username or password | =" + accountModel.Password + "= | =" + BCrypt.Net.BCrypt.HashPassword(loginJson.Password, accountModel.Salt) + "=");
             }
 
             string tokenStr = GenerateJSONWebToken(accountModel);

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using Microsoft.AspNetCore.Authorization;
+using System.Linq;
 
 namespace DigitalMenuApi.Models.Extensions
 {
@@ -17,6 +18,14 @@ namespace DigitalMenuApi.Models.Extensions
         public static bool IsNullOrEmpty(this string str)
         {
             return string.IsNullOrEmpty(str);
+        }
+
+        public class AuthorizeRolesAttribute : AuthorizeAttribute
+        {
+            public AuthorizeRolesAttribute(params string[] roles) : base()
+            {
+                Roles = string.Join(",", roles);
+            }
         }
     }
 }

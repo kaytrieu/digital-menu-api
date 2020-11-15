@@ -1,13 +1,18 @@
 ﻿using AutoMapper;
+using DigitalMenuApi.Constant;
 using DigitalMenuApi.Dtos.AccountDtos;
 using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
 using DigitalMenuApi.Models.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
+using static DigitalMenuApi.Models.Extensions.Extensions;
 
 namespace DigitalMenuApi.Controllers
 {
@@ -96,11 +101,23 @@ namespace DigitalMenuApi.Controllers
             Account accountModel = _mapper.Map<Account>(accountCreateDto);
 
             _repository.Add(accountModel);
-            _repository.SaveChanges();
+
+            try
+            {
+                _repository.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                if (ex.InnerException.ToString().Contains("duplicate"))
+                {
+                    return Conflict("Existed Username");
+                }
+            }
+            accountModel = _repository.Get(x => x.Id == accountModel.Id, x => x.Role, x => x.Store);
 
             AccountReadDto accountReadDto = _mapper.Map<AccountReadDto>(accountModel);
 
-            return CreatedAtAction("GetAccount", new { id = accountReadDto.Id }, accountCreateDto);
+            return CreatedAtAction("GetAccount", new { id = accountReadDto.Id }, accountReadDto);
 
         }
 

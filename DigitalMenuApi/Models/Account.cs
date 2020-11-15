@@ -8,6 +8,7 @@
         public int RoleId { get; set; }
         public bool? IsAvailable { get; set; }
         public string Password { get; set; }
+        public string Salt { get; set; }
 
         public virtual AccountRole Role { get; set; }
         public virtual Store Store { get; set; }

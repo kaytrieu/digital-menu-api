@@ -101,6 +101,38 @@ namespace DigitalMenuApi.Controllers
             //return Ok(Products);
         }
 
+        //Put: api/products/batch-price
+        [HttpPut("{storeId}/Products/batch-price")]
+        public IActionResult ChangePriceByBatch(int storeId, List<ProductUpdatePriceDto> productDtos)
+        {
+            List<int> notFoundIds = new List<int>();
+
+            foreach (var productDto in productDtos)
+            {
+
+                Product ProductFromRepo = _productRepository.Get(x => x.Id == productDto.Id && x.StoreId == storeId);
+
+                if (ProductFromRepo == null)
+                {
+                    notFoundIds.Add(productDto.Id);
+
+                }
+                else
+                {
+                    _mapper.Map(productDto, ProductFromRepo);
+
+                    _productRepository.SaveChanges();
+                }
+            }
+
+            if (notFoundIds.Count > 0)
+            {
+                return UnprocessableEntity("Product id: [" + string.Join(",", notFoundIds) + "] are not found in store.");
+            }
+
+            return NoContent();
+        }
+
         [HttpGet("{id}/Accounts")]
         public ActionResult<PagingResponseDto<AccountReadDto>> GetAllAccountOfStore(int id, int page= 1, int limit = 10, string searchValue = "")
         {
