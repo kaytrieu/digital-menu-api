@@ -65,6 +65,16 @@ namespace DigitalMenuApi.Controllers
                 new Claim(ClaimTypes.Name, accountModel.Username)
             };
 
+            if (accountModel.StoreId != null)
+            {
+                claims = new[]
+            {
+                new Claim(ClaimTypes.Role, accountModel.Role.Name),
+                new Claim(ClaimTypes.Name, accountModel.Username),
+                new Claim("storeId",accountModel.StoreId.ToString())
+            };
+            }
+
             JwtSecurityToken token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Issuer"],

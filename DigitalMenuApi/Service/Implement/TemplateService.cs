@@ -19,13 +19,14 @@ namespace DigitalMenuApi.Service.Implement
         private IProductListProductRepository _productListProductRepository;
         private readonly IProductRepository _productRepository;
         private readonly IScreenTemplateRepository _screenTemplateRepository;
+        private readonly IScreenRepository _screenRepository;
 
         public TemplateService(DigitalMenuSystemContext dbContext, IMapper mapper,
                                ITemplateRepository templateRepository, IBoxRepository boxRepository,
                                IProductListRepository productListRepository,
                                IProductListProductRepository productListProductRepository,
                                IProductRepository productRepository,
-                               IScreenTemplateRepository screenTemplateRepository) : base(dbContext, mapper)
+                               IScreenTemplateRepository screenTemplateRepository, IScreenRepository screenRepository) : base(dbContext, mapper)
         {
             _templateRepository = templateRepository;
             _boxRepository = boxRepository;
@@ -33,6 +34,7 @@ namespace DigitalMenuApi.Service.Implement
             _productListProductRepository = productListProductRepository;
             _productRepository = productRepository;
             _screenTemplateRepository = screenTemplateRepository;
+            _screenRepository = screenRepository;
         }
 
 
@@ -224,13 +226,35 @@ namespace DigitalMenuApi.Service.Implement
             return true;
         }
 
-        public int GetTemplateIdFromUDID(string udid)
+        public int GetTemplateIdFromUDID(string udid, int storeId)
         {
             var screenTemplateFromRepo = _screenTemplateRepository.Get(x => x.Screen.Uid == udid, x => x.Screen);
 
             if (screenTemplateFromRepo == null)
             {
-                return -1;
+                var screenModel = _screenRepository.Get(x => x.Uid == udid);
+
+                if (screenModel == null)
+                {
+                    screenModel = new Screen { StoreId = storeId, Uid = udid };
+                    _screenRepository.Add(screenModel);
+                    _screenRepository.SaveChanges();
+                }
+                var template = _templateRepository.Get(x => x.StoreId == storeId);
+
+                if (template == null)
+                {
+                    return 18;
+                }
+
+                var templateId = template.Id;
+
+                ScreenTemplate screenTemplate = new ScreenTemplate { ScreenId = screenModel.Id, TemplateId = templateId };
+
+                _screenTemplateRepository.Add(screenTemplate);
+                _screenTemplateRepository.SaveChanges();
+
+                return screenTemplate.TemplateId;
             }
             return screenTemplateFromRepo.TemplateId;
         }

@@ -1,16 +1,21 @@
 using AutoMapper;
+using DigitalMenuApi.Constant;
 using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.Dtos.TemplateDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
 using DigitalMenuApi.Models.Extensions;
 using DigitalMenuApi.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using static DigitalMenuApi.Models.Extensions.Extensions;
 
 namespace DigitalMenuApi.Controllers
 {
@@ -110,14 +115,19 @@ namespace DigitalMenuApi.Controllers
         }
 
         [HttpGet("udid/{udid}")]
+        [AuthorizeRoles(Roles =Role.Admin)]
         public ActionResult<TemplateDetailReadDto> GetDetailTemplatebyUDID(string udid)
         {
-            int templateId = _templateService.GetTemplateIdFromUDID(udid);
-
-            if(templateId == -1)
+            var identify = HttpContext.User.Identity as ClaimsIdentity;
+            List<Claim> claim = identify.Claims.ToList();
+            if(claim.Count < 3 || !claim[2].Type.Equals("storeId"))
             {
-                return NotFound();
+                return Forbid();
             }
+
+            int storeId = int.Parse(claim[2].Value);
+
+            int templateId = _templateService.GetTemplateIdFromUDID(udid, storeId);
 
             Template templateFromRepo = _templateRepository.Get(x => x.Id == templateId && x.IsAvailable == true,
                 template => template
@@ -142,7 +152,7 @@ namespace DigitalMenuApi.Controllers
         [HttpPut("{id}")]
         public IActionResult PutTemplate(int id, TemplateUpdateDto TemplateUpdateDto)
         {
-            if(_templateService.UpdateTemplateDetail(id, TemplateUpdateDto))
+            if (_templateService.UpdateTemplateDetail(id, TemplateUpdateDto))
             {
                 return NoContent();
             }
@@ -178,7 +188,7 @@ namespace DigitalMenuApi.Controllers
         }
 
         [HttpPost("/{sample-template-id}/StoreTemplate")]
-        public IActionResult CloneTemplateForStore([FromRoute(Name ="sample-template-id")]int sampleTemplateId, TemplateCreateDto templateDto)
+        public IActionResult CloneTemplateForStore([FromRoute(Name = "sample-template-id")] int sampleTemplateId, TemplateCreateDto templateDto)
         {
             string uiLink = _templateRepository.Get(x => x.Id == sampleTemplateId).Uilink;
 
