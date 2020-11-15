@@ -226,7 +226,13 @@ namespace DigitalMenuApi.Service.Implement
 
         public int GetTemplateIdFromUDID(string udid)
         {
-            return _screenTemplateRepository.Get(x => x.Screen.Uid == udid, x => x.Screen).TemplateId;
+            var screenTemplateFromRepo = _screenTemplateRepository.Get(x => x.Screen.Uid == udid, x => x.Screen);
+
+            if (screenTemplateFromRepo == null)
+            {
+                return -1;
+            }
+            return screenTemplateFromRepo.TemplateId;
         }
     }
 }

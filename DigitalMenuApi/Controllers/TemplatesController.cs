@@ -114,6 +114,11 @@ namespace DigitalMenuApi.Controllers
         {
             int templateId = _templateService.GetTemplateIdFromUDID(udid);
 
+            if(templateId == -1)
+            {
+                return NotFound();
+            }
+
             Template templateFromRepo = _templateRepository.Get(x => x.Id == templateId && x.IsAvailable == true,
                 template => template
                 .Include(template => template.Box)
