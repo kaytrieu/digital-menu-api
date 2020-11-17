@@ -41,7 +41,7 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Stores
         [HttpGet]
-        [AuthorizeRoles(Role.SuperAdmin]
+        [AuthorizeRoles(Role.SuperAdmin)]
         public ActionResult<PagingResponseDto<StoreReadDto>> GetStore(int page = 1, int limit = 10, string searchValue = "")
         {
             searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
