@@ -1,10 +1,6 @@
-﻿using FcmSharp;
-using FcmSharp.Requests;
-using FcmSharp.Settings;
-using Firebase.Auth;
+﻿using Firebase.Auth;
 using Firebase.Storage;
 using Microsoft.Extensions.Configuration;
-using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
