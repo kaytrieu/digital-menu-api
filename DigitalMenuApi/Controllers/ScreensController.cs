@@ -67,6 +67,20 @@ namespace DigitalMenuApi.Controllers
             return Ok(_mapper.Map<ScreenReadDto>(Screen));
         }
 
+        [HttpGet("{udid}")]
+        [Authorize]
+        public ActionResult<ScreenReadDto> GetScreenByUdid(string udid)
+        {
+            Screen Screen = _repository.Get(x => x.Uid == udid && x.IsAvailable == true);
+
+            if (Screen == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<ScreenReadDto>(Screen));
+        }
+
         // admin
         // PUT: api/Screens/5
         [HttpPut("{id}")]
