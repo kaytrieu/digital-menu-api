@@ -1,11 +1,16 @@
 using AutoMapper;
+using DigitalMenuApi.Constant;
 using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.Dtos.ScreenDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using static DigitalMenuApi.Models.Extensions.Extensions;
 
 namespace DigitalMenuApi.Controllers
 {
@@ -21,9 +26,10 @@ namespace DigitalMenuApi.Controllers
             _repository = repository;
             _mapper = mapper;
         }
-
+        //superadmin
         // GET: api/Screens
         [HttpGet]
+        [AuthorizeRoles(Role.SuperAdmin)]
         public ActionResult<PagingResponseDto<ScreenReadDto>> GetScreen(int page = 1, int limit = 10)
         {
             PagingDto<Screen> dto = _repository.GetAll(page, limit, x => x.IsAvailable == true);
@@ -45,9 +51,10 @@ namespace DigitalMenuApi.Controllers
             return Ok(response);
         }
 
-
+        //store get instore, staff get instore 
         // GET: api/Screens/5
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<ScreenReadDto> GetScreen(int id)
         {
             Screen Screen = _repository.Get(x => x.Id == id && x.IsAvailable == true);
@@ -60,8 +67,10 @@ namespace DigitalMenuApi.Controllers
             return Ok(_mapper.Map<ScreenReadDto>(Screen));
         }
 
+        // admin
         // PUT: api/Screens/5
         [HttpPut("{id}")]
+        [Authorize]
         public IActionResult PutScreen(int id, ScreenUpdateDto ScreenUpdateDto)
         {
             Screen ScreenFromRepo = _repository.Get(x => x.Id == id);
@@ -69,6 +78,21 @@ namespace DigitalMenuApi.Controllers
             if (ScreenFromRepo == null)
             {
                 return NotFound();
+            }
+
+
+            var claims = (HttpContext.User.Identity as ClaimsIdentity).Claims;
+
+            var role = claims.Where(x => x.Type == ClaimTypes.Role).FirstOrDefault().Value;
+
+            if (role == Role.Admin || role == Role.Staff)
+            {
+                var storeId = claims.Where(x => x.Type == "storeId").FirstOrDefault().Value;
+
+                if (!(ScreenFromRepo.StoreId == int.Parse(storeId)))
+                {
+                    return Forbid("You can only edit a store's screen");
+                }
             }
 
             //Mapper to Update
@@ -82,13 +106,30 @@ namespace DigitalMenuApi.Controllers
             return NoContent();
         }
 
+        // //store
         // POST: api/Screens
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize]
         public IActionResult PostScreen(ScreenCreateDto ScreenCreateDto)
         {
             Screen ScreenModel = _mapper.Map<Screen>(ScreenCreateDto);
+
+
+            var claims = (HttpContext.User.Identity as ClaimsIdentity).Claims;
+
+            var role = claims.Where(x => x.Type == ClaimTypes.Role).FirstOrDefault().Value;
+
+            if (role == Role.Admin || role == Role.Staff)
+            {
+                var storeId = claims.Where(x => x.Type == "storeId").FirstOrDefault().Value;
+
+                if (!(ScreenModel.StoreId == int.Parse(storeId)))
+                {
+                    return Forbid("You can only create a store's screen");
+                }
+            }
 
             _repository.Add(ScreenModel);
             _repository.SaveChanges();
@@ -99,8 +140,10 @@ namespace DigitalMenuApi.Controllers
 
         }
 
+        //store, SA
         // DELETE: api/Screens/5
         [HttpDelete("{id}")]
+        [Authorize]
         public IActionResult DeleteScreen(int id)
         {
             Screen ScreenFromRepo = _repository.Get(x => x.Id == id);
@@ -108,6 +151,20 @@ namespace DigitalMenuApi.Controllers
             if (ScreenFromRepo == null)
             {
                 return NotFound();
+            }
+
+            var claims = (HttpContext.User.Identity as ClaimsIdentity).Claims;
+
+            var role = claims.Where(x => x.Type == ClaimTypes.Role).FirstOrDefault().Value;
+
+            if (role == Role.Admin || role == Role.Staff)
+            {
+                var storeId = claims.Where(x => x.Type == "storeId").FirstOrDefault().Value;
+
+                if (!(ScreenFromRepo.StoreId == int.Parse(storeId)))
+                {
+                    return Forbid("You can only delete your store's screen");
+                }
             }
 
             _repository.Delete(ScreenFromRepo);
@@ -119,6 +176,7 @@ namespace DigitalMenuApi.Controllers
 
         //Patch
         [HttpPatch("{id}")]
+        [Authorize]
         public IActionResult PatchScreen(int id, JsonPatchDocument<ScreenUpdateDto> patchDoc)
         {
             Screen ScreenModelFromRepo = _repository.Get(x => x.Id == id);
@@ -126,6 +184,20 @@ namespace DigitalMenuApi.Controllers
             if (ScreenModelFromRepo == null)
             {
                 return NotFound();
+            }
+
+            var claims = (HttpContext.User.Identity as ClaimsIdentity).Claims;
+
+            var role = claims.Where(x => x.Type == ClaimTypes.Role).FirstOrDefault().Value;
+
+            if (role == Role.Admin || role == Role.Staff)
+            {
+                var storeId = claims.Where(x => x.Type == "storeId").FirstOrDefault().Value;
+
+                if (!(ScreenModelFromRepo.StoreId == int.Parse(storeId)))
+                {
+                    return Forbid("You can only edit a store's screen");
+                }
             }
 
             ScreenUpdateDto ScreenToPatch = _mapper.Map<ScreenUpdateDto>(ScreenModelFromRepo);

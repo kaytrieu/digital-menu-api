@@ -1,4 +1,5 @@
 using AutoMapper;
+using DigitalMenuApi.Constant;
 using DigitalMenuApi.Dtos.AccountDtos;
 using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.Dtos.ProductDtos;
@@ -8,12 +9,15 @@ using DigitalMenuApi.Dtos.TemplateDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
 using DigitalMenuApi.Models.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using static DigitalMenuApi.Models.Extensions.Extensions;
 
 namespace DigitalMenuApi.Controllers
 {
+    //SA
     [Route("api/[controller]")]
     [ApiController]
     public class StoresController : ControllerBase
@@ -37,6 +41,7 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/Stores
         [HttpGet]
+        [AuthorizeRoles(Role.SuperAdmin]
         public ActionResult<PagingResponseDto<StoreReadDto>> GetStore(int page = 1, int limit = 10, string searchValue = "")
         {
             searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
@@ -62,6 +67,7 @@ namespace DigitalMenuApi.Controllers
 
 
         // GET: api/Stores/5
+        [Authorize]
         [HttpGet("{id}")]
         public ActionResult<StoreReadDto> GetStore(int id)
         {
@@ -75,7 +81,9 @@ namespace DigitalMenuApi.Controllers
             return Ok(_mapper.Map<StoreReadDto>(Store));
         }
 
+        // all
         // GET: api/Stores/5/Product
+        [Authorize]
         [HttpGet("{id}/Products")]
         public ActionResult<PagingResponseDto<ProductReadDto>> GetAllProductOfStore(int id, int page = 1, int limit = 10, string searchValue = "")
         {
@@ -101,7 +109,9 @@ namespace DigitalMenuApi.Controllers
             //return Ok(Products);
         }
 
+        //store
         //Put: api/products/batch-price
+        [Authorize]
         [HttpPut("{storeId}/Products/batch-price")]
         public IActionResult ChangePriceByBatch(int storeId, List<ProductUpdatePriceDto> productDtos)
         {
@@ -133,6 +143,8 @@ namespace DigitalMenuApi.Controllers
             return NoContent();
         }
 
+        //store
+        [Authorize]
         [HttpGet("{id}/Accounts")]
         public ActionResult<PagingResponseDto<AccountReadDto>> GetAllAccountOfStore(int id, int page= 1, int limit = 10, string searchValue = "")
         {
@@ -158,6 +170,8 @@ namespace DigitalMenuApi.Controllers
             return Ok(response);
         }
 
+        //store, staff
+        [Authorize]
         [HttpGet("{id}/Templates")]
         public ActionResult<PagingResponseDto<TemplateReadDto>> GetAllTemplateOfStore(int id, int page = 1, int limit = 10, string tag = "", string searchValue = "")
         {
@@ -185,7 +199,8 @@ namespace DigitalMenuApi.Controllers
             return Ok(response);
         }
 
-
+        //store staff
+        [Authorize]
         [HttpGet("{id}/Screens")]
         public ActionResult<PagingResponseDto<ScreenReadDto>> GetAllScreenOfStore(int id, int page = 1, int limit = 10)
         {
@@ -209,7 +224,9 @@ namespace DigitalMenuApi.Controllers
             return Ok(response);
         }
 
+        //sa
         // PUT: api/Stores/5
+        [Authorize]
         [HttpPut("{id}")]
         public IActionResult PutStore(int id, StoreUpdateDto StoreUpdateDto)
         {
@@ -231,9 +248,11 @@ namespace DigitalMenuApi.Controllers
             return NoContent();
         }
 
+        //sa
         // POST: api/Stores
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        [Authorize]
         [HttpPost]
         public IActionResult PostStore(StoreCreateDto StoreCreateDto)
         {
@@ -248,7 +267,9 @@ namespace DigitalMenuApi.Controllers
 
         }
 
+        //sa
         // DELETE: api/Stores/5
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult DeleteStore(int id)
         {
@@ -267,6 +288,7 @@ namespace DigitalMenuApi.Controllers
         }
 
         //Patch
+        [Authorize]
         [HttpPatch("{id}")]
         public IActionResult PatchStore(int id, JsonPatchDocument<StoreUpdateDto> patchDoc)
         {

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DigitalMenuApi.Constant;
 using DigitalMenuApi.Dtos.AccountRoleDtos;
 using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.GenericRepository;
@@ -7,6 +8,7 @@ using DigitalMenuApi.Models.Extensions;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using static DigitalMenuApi.Models.Extensions.Extensions;
 
 namespace DigitalMenuApi.Controllers
 {
@@ -24,6 +26,8 @@ namespace DigitalMenuApi.Controllers
         }
 
         // GET: api/AccountRoles
+        //super admin
+        [AuthorizeRoles(Role.SuperAdmin)]
         [HttpGet]
         public ActionResult<PagingResponseDto<AccountRoleReadDto>> GetAccountRole(int page = 1, int limit = 10, string searchValue = "")
         {
@@ -49,8 +53,9 @@ namespace DigitalMenuApi.Controllers
             return Ok(response);
         }
 
-
+        //super admin
         // GET: api/AccountRoles/5
+        [AuthorizeRoles(Role.SuperAdmin)]
         [HttpGet("{id}")]
         public ActionResult<AccountRoleReadDto> GetAccountRole(int id)
         {
@@ -64,7 +69,9 @@ namespace DigitalMenuApi.Controllers
             return Ok(_mapper.Map<AccountRoleReadDto>(AccountRole));
         }
 
+        //superadmin
         // PUT: api/AccountRoles/5
+        [AuthorizeRoles(Role.SuperAdmin)]
         [HttpPut("{id}")]
         public IActionResult PutAccountRole(int id, AccountRoleUpdateDto AccountRoleUpdateDto)
         {
@@ -86,9 +93,11 @@ namespace DigitalMenuApi.Controllers
             return NoContent();
         }
 
+        //superadmin
         // POST: api/AccountRoles
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        [AuthorizeRoles(Role.SuperAdmin)]
         [HttpPost]
         public IActionResult PostAccountRole(AccountRoleCreateDto AccountRoleCreateDto)
         {
@@ -103,7 +112,9 @@ namespace DigitalMenuApi.Controllers
 
         }
 
+        //superadmin
         // DELETE: api/AccountRoles/5
+        [AuthorizeRoles(Role.SuperAdmin)]
         [HttpDelete("{id}")]
         public IActionResult DeleteAccountRole(int id)
         {
@@ -121,7 +132,9 @@ namespace DigitalMenuApi.Controllers
             return NoContent();
         }
 
+        //superadmin
         //Patch
+        [AuthorizeRoles(Role.SuperAdmin)]
         [HttpPatch("{id}")]
         public IActionResult PatchAccountRole(int id, JsonPatchDocument<AccountRoleUpdateDto> patchDoc)
         {

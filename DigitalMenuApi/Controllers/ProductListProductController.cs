@@ -1,4 +1,5 @@
 using AutoMapper;
+using DigitalMenuApi.Constant;
 using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.Dtos.ProductListProductDtos;
 using DigitalMenuApi.GenericRepository;
@@ -6,9 +7,11 @@ using DigitalMenuApi.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using static DigitalMenuApi.Models.Extensions.Extensions;
 
 namespace DigitalMenuApi.Controllers
 {
+    //superadmin
     [Route("api/product-lists-products")]
     [ApiController]
     public class ProductListProductsController : ControllerBase
@@ -24,6 +27,7 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/ProductListProducts
         [HttpGet]
+        [AuthorizeRoles(Role.SuperAdmin)]
         public ActionResult<PagingResponseDto<ProductListProductReadDto>> GetProductListProduct(int page = 1, int limit = 10)
         {
             PagingDto<ProductListProduct> dto = _repository.GetAll(page, limit, x => x.IsAvailable == true);
@@ -48,6 +52,7 @@ namespace DigitalMenuApi.Controllers
 
         // GET: api/ProductListProducts/5
         [HttpGet("{id}")]
+        [AuthorizeRoles(Role.SuperAdmin)]
         public ActionResult<ProductListProductReadDto> GetProductListProduct(int id)
         {
             ProductListProduct ProductListProduct = _repository.Get(x => x.Id == id && x.IsAvailable == true);
@@ -62,6 +67,7 @@ namespace DigitalMenuApi.Controllers
 
         // PUT: api/ProductListProducts/5
         [HttpPut("{id}")]
+        [AuthorizeRoles(Role.SuperAdmin)]
         public IActionResult PutProductListProduct(int id, ProductListProductUpdateDto ProductListProductUpdateDto)
         {
             ProductListProduct ProductListProductFromRepo = _repository.Get(x => x.Id == id);
@@ -86,6 +92,7 @@ namespace DigitalMenuApi.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [AuthorizeRoles(Role.SuperAdmin)]
         public IActionResult PostProductListProduct(ProductListProductCreateDto ProductListProductCreateDto)
         {
             ProductListProduct ProductListProductModel = _mapper.Map<ProductListProduct>(ProductListProductCreateDto);
@@ -101,6 +108,7 @@ namespace DigitalMenuApi.Controllers
 
         // DELETE: api/ProductListProducts/5
         [HttpDelete("{id}")]
+        [AuthorizeRoles(Role.SuperAdmin)]
         public IActionResult DeleteProductListProduct(int id)
         {
             ProductListProduct ProductListProductFromRepo = _repository.Get(x => x.Id == id);
@@ -119,6 +127,7 @@ namespace DigitalMenuApi.Controllers
 
         //Patch
         [HttpPatch("{id}")]
+        [AuthorizeRoles(Role.SuperAdmin)]
         public IActionResult PatchProductListProduct(int id, JsonPatchDocument<ProductListProductUpdateDto> patchDoc)
         {
             ProductListProduct ProductListProductModelFromRepo = _repository.Get(x => x.Id == id);

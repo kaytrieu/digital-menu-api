@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DigitalMenuApi.Constant;
 using DigitalMenuApi.Dtos.BoxDtos;
 using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.GenericRepository;
@@ -6,7 +7,9 @@ using DigitalMenuApi.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using static DigitalMenuApi.Models.Extensions.Extensions;
 
+// all super admin
 namespace DigitalMenuApi.Controllers
 {
     [Route("api/[controller]")]
@@ -23,6 +26,7 @@ namespace DigitalMenuApi.Controllers
         }
 
         // GET: api/Boxs
+        [AuthorizeRoles(Role.SuperAdmin)]
         [HttpGet]
         public ActionResult<PagingResponseDto<BoxReadDto>> GetBox(int page = 1, int limit = 10)
         {
@@ -47,6 +51,7 @@ namespace DigitalMenuApi.Controllers
 
 
         // GET: api/Boxs/5
+        [AuthorizeRoles(Role.SuperAdmin)]
         [HttpGet("{id}")]
         public ActionResult<BoxReadDto> GetBox(int id)
         {
@@ -61,6 +66,7 @@ namespace DigitalMenuApi.Controllers
         }
 
         // PUT: api/Boxs/5
+        [AuthorizeRoles(Role.SuperAdmin)]
         [HttpPut("{id}")]
         public IActionResult PutBox(int id, BoxUpdateDto BoxUpdateDto)
         {
@@ -85,6 +91,7 @@ namespace DigitalMenuApi.Controllers
         // POST: api/Boxs
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        [AuthorizeRoles(Role.SuperAdmin)]
         [HttpPost]
         public IActionResult PostBox(BoxCreateDto BoxCreateDto)
         {
@@ -100,6 +107,7 @@ namespace DigitalMenuApi.Controllers
         }
 
         // DELETE: api/Boxs/5
+        [AuthorizeRoles(Role.SuperAdmin)]
         [HttpDelete("{id}")]
         public IActionResult DeleteBox(int id)
         {
@@ -118,6 +126,7 @@ namespace DigitalMenuApi.Controllers
         }
 
         //Patch
+        [AuthorizeRoles(Role.SuperAdmin)]
         [HttpPatch("{id}")]
         public IActionResult PatchBox(int id, JsonPatchDocument<BoxUpdateDto> patchDoc)
         {

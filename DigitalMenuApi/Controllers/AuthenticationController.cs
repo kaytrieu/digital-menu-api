@@ -62,7 +62,8 @@ namespace DigitalMenuApi.Controllers
             Claim[] claims = new[]
             {
                 new Claim(ClaimTypes.Role, accountModel.Role.Name),
-                new Claim(ClaimTypes.Name, accountModel.Username)
+                new Claim(ClaimTypes.Name, accountModel.Username),
+                new Claim("accountId", accountModel.Id.ToString())
             };
 
             if (accountModel.StoreId != null)
@@ -71,7 +72,8 @@ namespace DigitalMenuApi.Controllers
             {
                 new Claim(ClaimTypes.Role, accountModel.Role.Name),
                 new Claim(ClaimTypes.Name, accountModel.Username),
-                new Claim("storeId",accountModel.StoreId.ToString())
+                new Claim("storeId",accountModel.StoreId.ToString()),
+                new Claim("accountId",accountModel.Id.ToString())
             };
             }
 

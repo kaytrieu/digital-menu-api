@@ -11,4 +11,10 @@ namespace DigitalMenuApi.Constant
         public const string SuperAdmin = "Super Admin";
         public const string Staff = "Staff";
     }
+    public static class RoleId
+    {
+        public const int Admin = 1;
+        public const int SuperAdmin = 3;
+        public const int Staff = 2;
+    }
 }

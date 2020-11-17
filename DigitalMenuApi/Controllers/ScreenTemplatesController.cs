@@ -3,6 +3,7 @@ using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.Dtos.ScreenTemplateDtos;
 using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -22,7 +23,9 @@ namespace DigitalMenuApi.Controllers
             _mapper = mapper;
         }
 
+        //store, staff get inside, SA get all
         // GET: api/ScreenTemplates
+        [Authorize]
         [HttpGet]
         public ActionResult<PagingResponseDto<ScreenTemplateReadDto>> GetScreenTemplate(int page = 1, int limit = 10)
         {
@@ -45,8 +48,10 @@ namespace DigitalMenuApi.Controllers
             return Ok(response);
         }
 
+        //store, staff get inside, SA get all
 
         // GET: api/ScreenTemplates/5
+        [Authorize]
         [HttpGet("{id}")]
         public ActionResult<ScreenTemplateReadDto> GetScreenTemplate(int id)
         {
@@ -60,7 +65,10 @@ namespace DigitalMenuApi.Controllers
             return Ok(_mapper.Map<ScreenTemplateReadDto>(ScreenTemplate));
         }
 
+        //store, staff get inside, SA get all
+
         // PUT: api/ScreenTemplates/5
+        [Authorize]
         [HttpPut("{id}")]
         public IActionResult PutScreenTemplate(int id, ScreenTemplateUpdateDto ScreenTemplateUpdateDto)
         {
@@ -82,9 +90,12 @@ namespace DigitalMenuApi.Controllers
             return NoContent();
         }
 
+        //store, staff get inside
+
         // POST: api/ScreenTemplates
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        [Authorize]
         [HttpPost]
         public IActionResult PostScreenTemplate(ScreenTemplateCreateDto ScreenTemplateCreateDto)
         {
@@ -99,7 +110,10 @@ namespace DigitalMenuApi.Controllers
 
         }
 
+        //store, staff get inside, SA get all
+
         // DELETE: api/ScreenTemplates/5
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult DeleteScreenTemplate(int id)
         {
@@ -118,6 +132,7 @@ namespace DigitalMenuApi.Controllers
         }
 
         //Patch
+        [Authorize]
         [HttpPatch("{id}")]
         public IActionResult PatchScreenTemplate(int id, JsonPatchDocument<ScreenTemplateUpdateDto> patchDoc)
         {

@@ -5,6 +5,7 @@ using DigitalMenuApi.GenericRepository;
 using DigitalMenuApi.Models;
 using DigitalMenuApi.Models.Extensions;
 using DigitalMenuApi.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +31,9 @@ namespace DigitalMenuApi.Controllers
             _mapper = mapper;
         }
 
+        //sa all, store, staff get in store
         // GET: api/Templates
+        [Authorize]
         [HttpGet]
         public ActionResult<PagingResponseDto<TemplateReadDto>> GetTemplate(int page = 1, int limit = 10, string tag = "", string searchValue = "")
         {
@@ -58,6 +61,8 @@ namespace DigitalMenuApi.Controllers
             return Ok(response);
         }
 
+        //sa, store
+        [Authorize]
         [HttpGet("sample")]
         public ActionResult<PagingResponseDto<TemplateReadDto>> GetSampleTemplate(int page = 1, int limit = 10, string tag = "", string searchValue = "")
         {
@@ -86,7 +91,9 @@ namespace DigitalMenuApi.Controllers
             return Ok(response);
         }
 
+        //store, sa, staff
         // GET: api/Templates/5
+        [Authorize]
         [HttpGet("{id}")]
         public ActionResult<TemplateDetailReadDto> GetDetailTemplate(int id)
         {
@@ -109,6 +116,8 @@ namespace DigitalMenuApi.Controllers
             return Ok(dto);
         }
 
+        //store
+        [Authorize]
         [HttpGet("udid/{udid}")]
         public ActionResult<TemplateDetailReadDto> GetDetailTemplatebyUDID(string udid)
         {
@@ -138,8 +147,10 @@ namespace DigitalMenuApi.Controllers
             return Ok(dto);
         }
 
+        //sa all, store put in store
         // PUT: api/Templates/5
         [HttpPut("{id}")]
+        [Authorize]
         public IActionResult PutTemplate(int id, TemplateUpdateDto TemplateUpdateDto)
         {
             if(_templateService.UpdateTemplateDetail(id, TemplateUpdateDto))
@@ -150,8 +161,10 @@ namespace DigitalMenuApi.Controllers
             return NotFound();
         }
 
+        //sa
         // POST: api/Templates
         [HttpPost]
+        [Authorize]
         public IActionResult PostTemplate([FromForm] TemplatePostFormWrapper formWrapper)
         {
             var file = formWrapper.file;
@@ -177,9 +190,13 @@ namespace DigitalMenuApi.Controllers
             return BadRequest();
         }
 
+
+        //store
+        [Authorize]
         [HttpPost("/{sample-template-id}/StoreTemplate")]
         public IActionResult CloneTemplateForStore([FromRoute(Name ="sample-template-id")]int sampleTemplateId, TemplateCreateDto templateDto)
         {
+            //get storeId in token
             string uiLink = _templateRepository.Get(x => x.Id == sampleTemplateId).Uilink;
 
             Template createdTemplate = _templateService.CreateNewTemplate(templateDto, uiLink);
@@ -189,7 +206,9 @@ namespace DigitalMenuApi.Controllers
             return CreatedAtAction("GetTemplate", new { id = createdTemplate.Id }, TemplateReadDto);
         }
 
+        //sa all, store instore
         // DELETE: api/Templates/5
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult DeleteTemplate(int id)
         {
@@ -208,6 +227,7 @@ namespace DigitalMenuApi.Controllers
         }
 
         //Patch
+        [Authorize]
         [HttpPatch("{id}")]
         public IActionResult PatchTemplate(int id, JsonPatchDocument<TemplateUpdateDto> patchDoc)
         {

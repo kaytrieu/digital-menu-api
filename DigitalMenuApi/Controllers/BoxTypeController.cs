@@ -1,4 +1,5 @@
 using AutoMapper;
+using DigitalMenuApi.Constant;
 using DigitalMenuApi.Dtos.BoxTypeDtos;
 using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.GenericRepository;
@@ -7,7 +8,9 @@ using DigitalMenuApi.Models.Extensions;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using static DigitalMenuApi.Models.Extensions.Extensions;
 
+//all superadmin
 namespace DigitalMenuApi.Controllers
 {
     [Route("api/box-types")]
@@ -24,6 +27,7 @@ namespace DigitalMenuApi.Controllers
         }
 
         // GET: api/BoxTypes
+        [AuthorizeRoles(Role.SuperAdmin)]
         [HttpGet]
         public ActionResult<PagingResponseDto<BoxTypeReadDto>> GetBoxType(int page = 1, int limit = 10, string searchValue = "")
         {
@@ -50,6 +54,7 @@ namespace DigitalMenuApi.Controllers
 
 
         // GET: api/BoxTypes/5
+        [AuthorizeRoles(Role.SuperAdmin)]
         [HttpGet("{id}")]
         public ActionResult<BoxTypeReadDto> GetBoxType(int id)
         {
@@ -64,6 +69,7 @@ namespace DigitalMenuApi.Controllers
         }
 
         // PUT: api/BoxTypes/5
+        [AuthorizeRoles(Role.SuperAdmin)]
         [HttpPut("{id}")]
         public IActionResult PutBoxType(int id, BoxTypeUpdateDto BoxTypeUpdateDto)
         {
@@ -88,6 +94,7 @@ namespace DigitalMenuApi.Controllers
         // POST: api/BoxTypes
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        [AuthorizeRoles(Role.SuperAdmin)]
         [HttpPost]
         public IActionResult PostBoxType(BoxTypeCreateDto BoxTypeCreateDto)
         {
@@ -103,6 +110,7 @@ namespace DigitalMenuApi.Controllers
         }
 
         // DELETE: api/BoxTypes/5
+        [AuthorizeRoles(Role.SuperAdmin)]
         [HttpDelete("{id}")]
         public IActionResult DeleteBoxType(int id)
         {
@@ -121,6 +129,7 @@ namespace DigitalMenuApi.Controllers
         }
 
         //Patch
+        [AuthorizeRoles(Role.SuperAdmin)]
         [HttpPatch("{id}")]
         public IActionResult PatchBoxType(int id, JsonPatchDocument<BoxTypeUpdateDto> patchDoc)
         {

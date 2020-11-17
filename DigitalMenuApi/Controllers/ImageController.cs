@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DigitalMenuApi.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +21,7 @@ namespace DigitalMenuApi.Controllers
             _config = config;
         }
 
+        [Authorize]
         [HttpPost]
         public ActionResult<string> UploadImage( IFormFile image)
         {
