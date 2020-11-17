@@ -29,7 +29,7 @@ namespace DigitalMenuApi.Controllers
 
             if(image != null && image.Length > 0)
             {
-                imageUrl = FirebaseService.UploadFileToFirebaseStorage(image.OpenReadStream(), DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss-ff_") + image.FileName, "Images").Result;
+                imageUrl = FirebaseService.UploadFileToFirebaseStorage(image.OpenReadStream(), DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss-ff_") + image.FileName, "Images", _config).Result;
             }
 
             return Ok(imageUrl);

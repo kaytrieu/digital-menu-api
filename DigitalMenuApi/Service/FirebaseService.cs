@@ -1,5 +1,10 @@
-﻿using Firebase.Auth;
+﻿using FcmSharp;
+using FcmSharp.Requests;
+using FcmSharp.Settings;
+using Firebase.Auth;
 using Firebase.Storage;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,15 +16,15 @@ namespace DigitalMenuApi.Service
         private static readonly string ApiKey = "AIzaSyA86T_fgdzpcnZHw2FfvKql_kFRzxEmlEg";
         private static readonly string Bucket = "swd-digitalmenu.appspot.com";
         private static readonly string AuthEmail = "digital-menu-firebase@gmail.com";
-        private static readonly string AuthPassword = "digitalmenufirebase";
 
-        public static async Task<string> UploadFileToFirebaseStorage(Stream stream, string filename, string folder)
+        public static async Task<string> UploadFileToFirebaseStorage(Stream stream, string filename, string folder, IConfiguration config)
         {
+            string authPassword = config["FirebaseAuthPassword"];
             string uploadedFileLink = string.Empty;
 
             // of course you can login using other method, not just email+password
             FirebaseAuthProvider auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
-            FirebaseAuthLink a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
+            FirebaseAuthLink a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, authPassword);
 
             // you can use CancellationTokenSource to cancel the upload midway
             CancellationTokenSource cancellation = new CancellationTokenSource();

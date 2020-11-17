@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -22,13 +23,16 @@ namespace DigitalMenuApi.Controllers
         private readonly ITemplateService _templateService;
         private readonly ITemplateRepository _templateRepository;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _config;
 
-        public TemplatesController(ITemplateRepository templateRepository, IMapper mapper, ITemplateService templateService)
+
+        public TemplatesController(ITemplateRepository templateRepository, IMapper mapper, ITemplateService templateService, IConfiguration config)
         {
             _templateService = templateService;
 
             _templateRepository = templateRepository;
             _mapper = mapper;
+            _config = config;
         }
 
         //sa all, store, staff get in store
@@ -171,7 +175,7 @@ namespace DigitalMenuApi.Controllers
             TemplateCreateDto templateDto = JsonConvert.DeserializeObject<TemplateCreateDto>(formWrapper.templateDtoJson);
             if (file.Length > 0)
             {
-                string uploadedFileLink = FirebaseService.UploadFileToFirebaseStorage(file.OpenReadStream(), DateTime.Now.ToString("ddMMyyyyHHmmssff") + file.FileName, "UiLinkJsFile").Result;
+                string uploadedFileLink = FirebaseService.UploadFileToFirebaseStorage(file.OpenReadStream(), DateTime.Now.ToString("ddMMyyyyHHmmssff") + file.FileName, "UiLinkJsFile", _config).Result;
 
                 if (templateDto != null)
                 {
