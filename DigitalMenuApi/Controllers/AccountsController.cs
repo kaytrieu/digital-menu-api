@@ -100,7 +100,7 @@ namespace DigitalMenuApi.Controllers
             //    }
             //}
 
-            
+
 
             return Ok(_mapper.Map<AccountReadDto>(account));
         }
@@ -152,7 +152,7 @@ namespace DigitalMenuApi.Controllers
         // POST: api/Accounts
         //store tạo staff, super tạo store
         [HttpPost]
-        [AuthorizeRoles(Role.Admin,Role.SuperAdmin)]
+        [AuthorizeRoles(Role.Admin, Role.SuperAdmin)]
         public ActionResult<AccountReadDto> PostAccount(AccountCreateDto accountCreateDto)
         {
             var claims = (HttpContext.User.Identity as ClaimsIdentity).Claims;
@@ -161,7 +161,7 @@ namespace DigitalMenuApi.Controllers
 
             if (role == Role.Admin)
             {
-                if(!(accountCreateDto.RoleId == RoleId.Staff))
+                if (!(accountCreateDto.RoleId == RoleId.Staff))
                 {
                     return Forbid("You can only create a staff's account");
                 }
