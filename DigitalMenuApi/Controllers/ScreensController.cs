@@ -67,7 +67,7 @@ namespace DigitalMenuApi.Controllers
             return Ok(_mapper.Map<ScreenReadDto>(Screen));
         }
 
-        [HttpGet("{udid}")]
+        [HttpGet("udid/{udid}")]
         [Authorize]
         public ActionResult<ScreenReadDto> GetScreenByUdid(string udid)
         {
