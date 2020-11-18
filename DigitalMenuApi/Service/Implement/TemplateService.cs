@@ -73,7 +73,8 @@ namespace DigitalMenuApi.Service.Implement
 
                         foreach (ProductListProductCreateWithTemplateDto productListProductDto in productListDto.Products)
                         {
-                            ProductListProduct productListProduct = _mapper.Map<ProductListProduct>(productListProductDto);
+                            ProductListProduct productListProduct = new ProductListProduct { ProductId = productListProductDto.Id, Location = productListProductDto.Location };
+                                //_mapper.Map<ProductListProduct>(productListProductDto);
                             productListProduct.ProductListId = productList.Id;
 
                             Product product = _productRepository.Get(predicate: x => x.Id == productListProduct.ProductId
@@ -99,7 +100,6 @@ namespace DigitalMenuApi.Service.Implement
             {
                 transaction.Rollback();
             }
-
             return template;
         }
 
