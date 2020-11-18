@@ -42,7 +42,7 @@ namespace DigitalMenuApi.Controllers
             if (role == Role.Admin || role == Role.Staff)
             {
                 var storeId = int.Parse(claims.Where(x => x.Type == "storeId").FirstOrDefault().Value);
-                dto = _repository.GetAll(page, limit, x => x.IsAvailable == true && x.Screen.StoreId == storeId, x => x.Screen);
+                dto = _repository.GetAll(page, limit, x => x.IsAvailable == true && x.Screen.StoreId == storeId, x => x.Screen, x => x.Template);
             }
 
             //if (role == Role.Staff)
@@ -83,7 +83,7 @@ namespace DigitalMenuApi.Controllers
         [HttpGet("{id}")]
         public ActionResult<ScreenTemplateReadDto> GetScreenTemplate(int id)
         {
-            ScreenTemplate ScreenTemplate = _repository.Get(x => x.Id == id && x.IsAvailable == true);
+            ScreenTemplate ScreenTemplate = _repository.Get(x => x.Id == id && x.IsAvailable == true, x => x.Screen, x => x.Template);
 
             if (ScreenTemplate == null)
             {

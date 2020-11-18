@@ -180,7 +180,7 @@ namespace DigitalMenuApi.Controllers
 
             PagingDto<Template> dto = _templateRepository.GetAll(page, limit, predicate: x => x.IsAvailable == true && x.StoreId == id
                                                                       && (x.Tags.ToLower().Contains(searchValue.ToLower())
-                                                                      || x.Name.ToLower().Contains(searchValue.ToLower())));
+                                                                      || x.Name.ToLower().Contains(searchValue.ToLower())), x => x.Store);
 
             IEnumerable<TemplateReadDto> templates = _mapper.Map<IEnumerable<TemplateReadDto>>(dto.Result);
 
@@ -204,7 +204,7 @@ namespace DigitalMenuApi.Controllers
         [HttpGet("{id}/Screens")]
         public ActionResult<PagingResponseDto<ScreenReadDto>> GetAllScreenOfStore(int id, int page = 1, int limit = 10)
         {
-            PagingDto<Screen> dto = _screenRepository.GetAll(page, limit, x => x.IsAvailable == true && x.StoreId == id);
+            PagingDto<Screen> dto = _screenRepository.GetAll(page, limit, x => x.IsAvailable == true && x.StoreId == id, x => x.Store);
 
             var screens = _mapper.Map<IEnumerable<ScreenReadDto>>(dto.Result);
 

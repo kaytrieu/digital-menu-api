@@ -206,7 +206,7 @@ namespace DigitalMenuApi.Controllers
 
             TemplateDetailReadDto TemplateReadDto = _mapper.Map<TemplateDetailReadDto>(createdTemplate);
 
-            return CreatedAtAction("GetTemplate", new { id = createdTemplate.Id }, TemplateReadDto);
+            return CreatedAtAction("GetDetailTemplate", new { id = createdTemplate.Id }, TemplateReadDto);
         }
 
         //sa all, store instore

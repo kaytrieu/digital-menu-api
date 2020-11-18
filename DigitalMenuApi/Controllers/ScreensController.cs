@@ -32,7 +32,7 @@ namespace DigitalMenuApi.Controllers
         [AuthorizeRoles(Role.SuperAdmin)]
         public ActionResult<PagingResponseDto<ScreenReadDto>> GetScreen(int page = 1, int limit = 10)
         {
-            PagingDto<Screen> dto = _repository.GetAll(page, limit, x => x.IsAvailable == true);
+            PagingDto<Screen> dto = _repository.GetAll(page, limit, x => x.IsAvailable == true, x=> x.Store);
 
             var screen = _mapper.Map<IEnumerable<ScreenReadDto>>(dto.Result);
 
@@ -57,7 +57,7 @@ namespace DigitalMenuApi.Controllers
         [Authorize]
         public ActionResult<ScreenReadDto> GetScreen(int id)
         {
-            Screen Screen = _repository.Get(x => x.Id == id && x.IsAvailable == true);
+            Screen Screen = _repository.Get(x => x.Id == id && x.IsAvailable == true, x=> x.Store);
 
             if (Screen == null)
             {
