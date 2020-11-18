@@ -1,4 +1,5 @@
 using AutoMapper;
+using DigitalMenuApi.Constant;
 using DigitalMenuApi.Dtos.PagingDtos;
 using DigitalMenuApi.Dtos.ScreenTemplateDtos;
 using DigitalMenuApi.GenericRepository;
@@ -7,6 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 
 namespace DigitalMenuApi.Controllers
 {
@@ -29,7 +32,32 @@ namespace DigitalMenuApi.Controllers
         [HttpGet]
         public ActionResult<PagingResponseDto<ScreenTemplateReadDto>> GetScreenTemplate(int page = 1, int limit = 10)
         {
-            PagingDto<ScreenTemplate> dto = _repository.GetAll(page, limit, x => x.IsAvailable == true);
+            PagingDto<ScreenTemplate> dto;
+
+            var claims = (HttpContext.User.Identity as ClaimsIdentity).Claims;
+
+            var role = claims.Where(x => x.Type == ClaimTypes.Role).FirstOrDefault().Value;
+
+
+            if (role == Role.Admin || role == Role.Staff)
+            {
+                var storeId = int.Parse(claims.Where(x => x.Type == "storeId").FirstOrDefault().Value);
+                dto = _repository.GetAll(page, limit, x => x.IsAvailable == true && x.Screen.StoreId == storeId, x => x.Screen);
+            }
+
+            //if (role == Role.Staff)
+            //{
+            //    var accountId = claims.Where(x => x.Type == "accountId").FirstOrDefault().Value;
+
+            //    if (account.Id != int.Parse(accountId))
+            //    {
+            //        return Forbid("You can only get your account");
+            //    }
+            //}
+            else
+            {
+                dto = _repository.GetAll(page, limit, x => x.IsAvailable == true);
+            }
 
             var screenTemplate = _mapper.Map<IEnumerable<ScreenTemplateReadDto>>(dto.Result);
 

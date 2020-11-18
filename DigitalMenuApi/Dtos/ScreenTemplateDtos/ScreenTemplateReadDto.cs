@@ -6,6 +6,7 @@
         public int ScreenId { get; set; }
         public string ScreenUid { get; set; }
         public int TemplateId { get; set; }
+        public string TemplateName { get; set; }
 
     }
 }
