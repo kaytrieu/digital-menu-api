@@ -121,7 +121,6 @@ namespace DigitalMenuApi.Controllers
         }
 
         //store
-        [Authorize]
         [HttpGet("udid/{udid}")]
         public ActionResult<TemplateDetailReadDto> GetDetailTemplatebyUDID(string udid)
         {

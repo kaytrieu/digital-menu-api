@@ -41,8 +41,9 @@ namespace DigitalMenuApi.Service
             }
             catch
             {
-
+                return string.Empty;
             }
+
             return uploadedFileLink;
         }
     }
