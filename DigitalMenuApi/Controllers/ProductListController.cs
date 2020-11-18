@@ -103,7 +103,7 @@ namespace DigitalMenuApi.Controllers
 
             ProductListReadDto ProductListReadDto = _mapper.Map<ProductListReadDto>(ProductListModel);
 
-            return CreatedAtAction("GetProductList", new { id = ProductListReadDto.Id }, ProductListCreateDto);
+            return CreatedAtAction("GetProductList", new { id = ProductListReadDto.Id }, ProductListReadDto);
 
         }
 

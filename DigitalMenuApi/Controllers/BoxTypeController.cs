@@ -105,7 +105,7 @@ namespace DigitalMenuApi.Controllers
 
             BoxTypeReadDto BoxTypeReadDto = _mapper.Map<BoxTypeReadDto>(BoxTypeModel);
 
-            return CreatedAtAction("GetBoxType", new { id = BoxTypeReadDto.Id }, BoxTypeCreateDto);
+            return CreatedAtAction("GetBoxType", new { id = BoxTypeReadDto.Id }, BoxTypeReadDto);
 
         }
 

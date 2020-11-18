@@ -102,7 +102,7 @@ namespace DigitalMenuApi.Controllers
 
             BoxReadDto BoxReadDto = _mapper.Map<BoxReadDto>(BoxModel);
 
-            return CreatedAtAction("GetBox", new { id = BoxReadDto.Id }, BoxCreateDto);
+            return CreatedAtAction("GetBox", new { id = BoxReadDto.Id }, BoxReadDto);
 
         }
 

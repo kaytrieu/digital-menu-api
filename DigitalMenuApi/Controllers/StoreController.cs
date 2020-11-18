@@ -263,7 +263,7 @@ namespace DigitalMenuApi.Controllers
 
             StoreReadDto StoreReadDto = _mapper.Map<StoreReadDto>(StoreModel);
 
-            return CreatedAtAction("GetStore", new { id = StoreReadDto.Id }, StoreCreateDto);
+            return CreatedAtAction("GetStore", new { id = StoreReadDto.Id }, StoreReadDto);
 
         }
 

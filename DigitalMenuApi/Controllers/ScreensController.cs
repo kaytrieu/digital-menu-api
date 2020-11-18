@@ -150,7 +150,7 @@ namespace DigitalMenuApi.Controllers
 
             ScreenReadDto ScreenReadDto = _mapper.Map<ScreenReadDto>(ScreenModel);
 
-            return CreatedAtAction("GetScreen", new { id = ScreenReadDto.Id }, ScreenCreateDto);
+            return CreatedAtAction("GetScreen", new { id = ScreenReadDto.Id }, ScreenReadDto);
 
         }
 

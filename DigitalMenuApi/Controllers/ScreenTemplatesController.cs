@@ -106,7 +106,7 @@ namespace DigitalMenuApi.Controllers
 
             ScreenTemplateReadDto ScreenTemplateReadDto = _mapper.Map<ScreenTemplateReadDto>(ScreenTemplateModel);
 
-            return CreatedAtAction("GetScreenTemplate", new { id = ScreenTemplateReadDto.Id }, ScreenTemplateModel);
+            return CreatedAtAction("GetScreenTemplate", new { id = ScreenTemplateReadDto.Id }, ScreenTemplateReadDto);
 
         }
 

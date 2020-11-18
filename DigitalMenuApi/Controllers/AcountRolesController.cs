@@ -108,7 +108,7 @@ namespace DigitalMenuApi.Controllers
 
             AccountRoleReadDto AccountRoleReadDto = _mapper.Map<AccountRoleReadDto>(AccountRoleModel);
 
-            return CreatedAtAction("GetAccountRole", new { id = AccountRoleReadDto.Id }, AccountRoleCreateDto);
+            return CreatedAtAction("GetAccountRole", new { id = AccountRoleReadDto.Id }, AccountRoleReadDto);
 
         }
 
