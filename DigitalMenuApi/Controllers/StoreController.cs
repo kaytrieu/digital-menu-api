@@ -178,7 +178,7 @@ namespace DigitalMenuApi.Controllers
             searchValue = searchValue.IsNullOrEmpty() ? "" : searchValue.Trim();
             tag = tag.IsNullOrEmpty() ? "" : tag.Trim();
 
-            PagingDto<Template> dto = _templateRepository.GetAll(page, limit, predicate: x => x.IsAvailable == true
+            PagingDto<Template> dto = _templateRepository.GetAll(page, limit, predicate: x => x.IsAvailable == true && x.StoreId == id
                                                                       && (x.Tags.ToLower().Contains(searchValue.ToLower())
                                                                       || x.Name.ToLower().Contains(searchValue.ToLower())));
 
