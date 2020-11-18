@@ -179,7 +179,7 @@ namespace DigitalMenuApi.Controllers
             tag = tag.IsNullOrEmpty() ? "" : tag.Trim();
 
             PagingDto<Template> dto = _templateRepository.GetAll(page, limit, predicate: x => x.IsAvailable == true
-                                                                      && (x.Tags.ToLower().Contains(tag.ToLower())
+                                                                      && (x.Tags.ToLower().Contains(searchValue.ToLower())
                                                                       || x.Name.ToLower().Contains(searchValue.ToLower())));
 
             IEnumerable<TemplateReadDto> templates = _mapper.Map<IEnumerable<TemplateReadDto>>(dto.Result);
